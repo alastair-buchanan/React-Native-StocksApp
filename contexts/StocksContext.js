@@ -1,0 +1,37 @@
+import React, { useState, useContext, useEffect } from "react";
+import { AsyncStorage } from "react-native";
+
+const StocksContext = React.createContext();
+
+export const StocksProvider = ({ children }) => {
+  const [state, setState] = useState([]);
+
+  return (
+    <StocksContext.Provider value={[state, setState]}>
+      {children}
+    </StocksContext.Provider>
+  );
+};
+
+export const useStocksContext = () => {
+  const [state, setState] = useContext(StocksContext);
+ // const [watchList, setWatchList] = useState([]);
+  // can put more code here
+
+  function addToWatchlist(newSymbol) {
+    //FixMe: add the new symbol to the watchlist, save it in useStockContext state and persist to AsyncStorage
+    //watchList.push(newSymbol);
+    //let newList = watchList;
+    //newList.push(newSymbol);
+    //setWatchList(newList);
+    setState([...state, newSymbol]);
+    console.log("WatchList: ", state);
+    //setState(watchList);
+  }
+
+  useEffect(() => {
+    // FixMe: Retrieve watchlist from persistent storage
+  }, []);
+
+  return { ServerURL: 'http://131.181.190.87:3001', watchList: state,  addToWatchlist };
+};
