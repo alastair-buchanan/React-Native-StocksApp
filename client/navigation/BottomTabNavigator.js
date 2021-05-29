@@ -4,6 +4,7 @@ import TabBarIcon from "../components/TabBarIcon";
 import StocksScreen from "../screens/StocksScreen";
 import SearchScreen from "../screens/SearchScreen";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { HomeScreen } from "../screens/HomeScreen";
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = "Search";
@@ -15,6 +16,16 @@ export default function BottomTabNavigator({ navigation, route }) {
 
   return (
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+      <BottomTab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          title: "Home",
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} name="home" />
+          ),
+        }}
+      />
       <BottomTab.Screen
         name="Stocks"
         component={StocksScreen}
