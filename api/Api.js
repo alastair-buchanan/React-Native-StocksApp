@@ -20,11 +20,14 @@ async function getAllStocks() {
 
 // This function gets price history for a specific stock, searched by symbol
 async function getStocksByCode(search) {
-  const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${search}&apikey=${AV_API_KEY}`;
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${search}&apikey=${AV_API_KEY}`;
   let res = await fetch(url);
   let data = await res.json();
-  let stockPrices = data["Global Quote"];
-  return stockPrices;
+  let stockPrices = data["Time Series (Daily)"];
+  return Object.keys(stockPrices).map((element) => ({
+    labels: new Date(element).toLocaleDateString("en-AU"),
+    data: Number(stockPrices[element]["4. close"]),
+  }));
 }
 
 // useStockList functional component async hits the api and returns the stocks

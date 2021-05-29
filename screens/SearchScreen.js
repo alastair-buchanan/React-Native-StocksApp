@@ -2,28 +2,23 @@ import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
-  TouchableWithoutFeedback,
-  Keyboard,
   Text,
-  Button,
   TouchableOpacity,
-  ScrollView,
-  TextInput,
   FlatList,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
-import { scaleSize } from "../constants/Layout";
-import { Ionicons } from "@expo/vector-icons";
 import { useStockList } from "../api/Api";
-import { Searchbar } from "react-native-elements";
-import SearchBar from "react-native-elements/dist/searchbar/SearchBar-ios";
-import { Input } from "react-native-elements/dist/input/Input";
+import { SearchBar } from "react-native-elements";
 
 // FixMe: implement other components and functions used in SearchScreen here (don't just put all the JSX in SearchScreen below)
 
 // filterBySearch function filters stocks by symbol
 function filterBySearch(data, param) {
-  return data.filter((stock) => stock.Symbol.startsWith(param.toUpperCase()));
+  return data.filter(
+    (stock) =>
+      stock.Symbol.startsWith(param.toUpperCase()) ||
+      stock.Name.startsWith(param)
+  );
 }
 
 export default function SearchScreen({ navigation }) {
@@ -50,35 +45,34 @@ export default function SearchScreen({ navigation }) {
 
   function stock({ item }) {
     return (
-        <TouchableOpacity
-          style={styles.symbolButton}
-          onPress={() => addToWatchlist(item.Symbol)}
-        >
-          <Text style={styles.symbolText}>
-            {item.Symbol} {item.Industry}
-          </Text>
-          <Text style={styles.symbolText}>{item.Name}</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.symbolButton}
+        onPress={() => addToWatchlist(item.Symbol)}
+      >
+        <Text style={styles.symbolText}>
+          {item.Symbol} {item.Industry}
+        </Text>
+        <Text style={styles.symbolText}>{item.Name}</Text>
+      </TouchableOpacity>
     );
   }
 
-  function onPress({item}) {
+  function onPress({ item }) {
     () => addToWatchlist(item.Symbol);
-    () => navigation.navigate('Stocks', { symbol: item.Symbol })
+    () => navigation.navigate("Stocks", { symbol: item.Symbol });
   }
 
   const onChangeSearch = (query) => setSearchQuery(query);
 
   return (
     <View style={styles.container}>
-      <TextInput
-        underlineColorAndroid="white"
-        placeholder="Stock Search"
-        placeholderTextColor="white"
-        autoCapitalize="none"
-        style={styles.symbolSearch}
+      <SearchBar
+        placeholder="Search Stocks Here..."
         onChangeText={onChangeSearch}
-      ></TextInput>
+        value={searchQuery}
+        platform="android"
+      />
+
       <FlatList
         data={rowData}
         renderItem={stock}
@@ -111,5 +105,9 @@ const styles = StyleSheet.create({
 
     borderWidth: 1,
     borderBottomColor: "grey",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
   },
 });

@@ -16,7 +16,13 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native-chart-kit": "^6.11.0",
     "react-native-elements": "^3.4.1",
+    "react-native-paper": "^4.8.1",
+    "react-native-raw-bottom-sheet": "^2.2.0",
+    "react-native-svg": "^12.1.1",
+    "react-native-swipe-navigation": "^1.0.0-beta",
+    "react-native-swiper": "^1.6.0",
     "react-native-web": "~0.13.12",
     "react-router-native": "^5.2.0"
   },
