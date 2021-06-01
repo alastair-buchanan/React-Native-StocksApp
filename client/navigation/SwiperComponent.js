@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { StyleSheet, Text, View } from "react-native";
 import { StockInfoTable } from "../components/StockInfoTable";
@@ -7,6 +7,10 @@ import Swiper from "react-native-swiper/src";
 import { Dimensions } from "react-native";
 
 export const SwiperComponent = ({ stockInfo }) => {
+  useEffect(() => {
+    console.log("swiper data", stockInfo);
+  }, [])
+
   return (
     <Swiper>
       <Swiper style={styles.wrapper} showsButtons={true}>

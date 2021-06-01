@@ -7,9 +7,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var db = require("./db");
-
 var app = express();
+app.listen(3001);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,6 +17,7 @@ app.set('view engine', 'jade');
 const helmet = require('helmet');
 const cors = require('cors');
 
+// Logging middleware
 app.use(logger('dev'));
 app.use(helmet());
 app.use(cors()); // use cors
@@ -25,19 +25,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(db);
 
+const knex_options = require('./knexfile.js')
+const db = require('knex')(knex_options);
 
+app.use(function (req, res, next) {
+  req.db = db;
+  next();
+});
+
+// Router middleware
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
