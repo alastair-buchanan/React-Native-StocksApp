@@ -7,7 +7,7 @@ const AV_API_KEY = "GKRUI3TTPZADU2T7";
 //const FMP_API_KEY = "1e866a76e34848836623e16619aadb55";
 const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
 //const FMP_API_KEY = "b40776c8f4a497b7699489254b470535";
-const USERS_API_URL = "http://localhost:3000";
+const USERS_API_URL = "http://172.22.26.173:3000";
 
 async function getStocksByCode(search) {
   //const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${search}&apikey=${AV_API_KEY}`;
@@ -17,16 +17,12 @@ async function getStocksByCode(search) {
   return data;
 }
 
-async function postSymbolsToUser(userSymbols) {
-  //implement later
-};
-
 async function getStocksFromDB(email) {
   let res = await fetch(`${USERS_API_URL}/users/${email}/symbols`);
   let data = res.json();
   console.log("retrieved data from db", data);
   return data;
-};
+}
 
 export const StocksProvider = ({ children }) => {
   const [state, setState] = useState([]);
@@ -41,16 +37,31 @@ export const StocksProvider = ({ children }) => {
 export const useStocksContext = () => {
   const [state, setState] = useContext(StocksContext);
   const [currentList, setCurrentList] = useState([]);
-  const [retrievedStocks, setRetrievedStocks] = useState([])
+  const [retrievedStocks, setRetrievedStocks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isNewLoad, setisNewLoad] = useState(true);
+  const [currentUser, setCurrentUser] = useState("tt");
+
   // can put more code here
+  async function postSymbolsToUser(userSymbols) {
+    fetch(`${USERS_API_URL}/users/symbols/update`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        email: currentUser,
+        symbols: userSymbols,
+      }),
+    }).then((res) => res.json());
+  }
 
   let _retrieveData = async () => {
     try {
       const keys = await AsyncStorage.getAllKeys();
 
-      return keys.filter(value => value !== "token");
+      return keys.filter((value) => value !== "token");
     } catch (error) {
       // Error retrieving data
     }
@@ -61,44 +72,46 @@ export const useStocksContext = () => {
     var isInvalidSymbol = currentList.includes(newSymbol);
     setLoading(true);
     let stocks = [];
-    if (isInvalidSymbol === false) {
+    if (isInvalidSymbol === false || newSymbol === undefined) {
       currentList.push(newSymbol);
+      console.log("Katharina: ", currentList);
+      postSymbolsToUser(currentList);
+
       let symbolInfo = await getStocksByCode(newSymbol);
       setState([...state, symbolInfo[0]]);
       AsyncStorage.setItem(newSymbol, newSymbol);
-      setLoading(false);
     }
-    setLoading(false);
   }
 
   useEffect(() => {
-    
     //FixMe: Retrieve watchlist from persistent storage
     (async () => {
-
       const returnedData = await getStocksFromDB("tt");
       const userSymbols = returnedData.Symbols;
-      console.log("user symbols from db", userSymbols)
+      console.log("user symbols from db", userSymbols);
       //await AsyncStorage.clear()
 
       let retrievedList = [];
-      
+
       if (currentList.length === 0) {
         setisNewLoad(false);
         setLoading(true);
-        retrievedList = await _retrieveData()
+        retrievedList = await _retrieveData();
         //setRetrievedStocks(retrievedList);
-        userSymbols.map((symbol) => {
-          if (!retrievedList.includes(symbol)) {
-            AsyncStorage.setItem(symbol, symbol);
-            retrievedList.push(symbol)
-          }
-        })
-        
+        console.log("retrieved list", retrievedList);
+        if (userSymbols !== null) {
+          userSymbols.map((symbol) => {
+            if (!retrievedList.includes(symbol)) {
+              AsyncStorage.setItem(symbol, symbol);
+              retrievedList.push(symbol);
+            }
+          });
+        }
+
         console.log("retrieved data:", retrievedList);
         retrievedList.map((element) => {
-              addToWatchlist(element)
-          });
+          addToWatchlist(element);
+        });
       }
     })();
     setLoading(false);

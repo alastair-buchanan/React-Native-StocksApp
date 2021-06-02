@@ -75,6 +75,33 @@ router.get("/:email/symbols", function (req, res, next) {
   // });
 });
 
+// router.post('/symbols/update', (req, res, next) => {
+//   if (!req.body.email || !req.body.symbols) {
+//     res.status(400).json({
+//       message: 'error updating symbols'
+//     })
+//     console.log('error on request body: ', JSON.stringify(req.body))
+//   } else {
+//     const filter = {
+//       'email': req.body.email
+//     }
+//     const userSymbols = {
+//       'symbols': req.body.symbols
+//     }
+
+//     req.db('users').where(filter).update(userSymbols).then(_ => {
+//       res.status(201).json({
+//         message: `successfully updated ${req.body.email}`
+//       })
+//       console.log("successful symbol update: ", JSON.stringify(filter))
+//     }).catch(_ => {
+//       res.status(500).json({
+//         message: 'database error - not updated'
+//       })
+//     })
+//   }
+// });
+
 router.post("/register", (req, res) => {
   const bcrypt = require("bcrypt");
   const jwt = require("jsonwebtoken");
@@ -194,7 +221,7 @@ router.post("/login", function (req, res, next) {
 
 
 
-router.post("/update/symbols", function (req, res, next) {
+router.post("/symbols/update", authorize, function (req, res, next) {
   if (!req.body.email || !req.body.symbols) {
     res.status(400).json({
       message: 'error updating symbols'
@@ -205,12 +232,15 @@ router.post("/update/symbols", function (req, res, next) {
       'email': req.body.email
     }
     const userSymbols = {
-      'symbols': JSON.stringify(req.body.symbols)
+      'symbols': JSON.stringify(userSymbols)
     }
     console.log(JSON.stringify(userSymbols));
-
+    //{"symbols":"[\"GILD\",\"XEL\"]"}
+    //console.log("update response", req.db('users').where(filter));
     req.db('users').where(filter).update(userSymbols).then(_ => {
       //Update this later with redirect.
+    //console.log("update response", res);
+
       console.log("successsssssssssssssssssssssss");
     }).catch(_ => {
       res.status(500).json({

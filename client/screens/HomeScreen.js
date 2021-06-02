@@ -1,9 +1,8 @@
 import React from 'react'
 import { Button, View, Text } from 'react-native';
-import jwt from "jsonwebtoken";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "http://172.22.26.173:3000";
 
 export const HomeScreen = () => {
     function register() {

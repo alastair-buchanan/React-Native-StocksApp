@@ -4,6 +4,6 @@ module.exports = {
         host: "localhost",
         database: "stockapp",
         user: "root",
-        password: "@HomerNala"
+        password: "Ifn666!"
     }
 };
