@@ -13,7 +13,7 @@ const INITIAL_ROUTE_NAME = "SignIn";
 
 export default function LandingPageNavigation({ navigation, route }) {
     useEffect(() => {
-      navigation.setOptions({ headerTitle: getHeaderTitle(route) });
+      navigation.setOptions({ headerTitle: null });
     }, [navigation, route]);
   
     return (

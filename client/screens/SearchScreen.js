@@ -5,10 +5,12 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
+  Dimensions,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { useStockList } from "../api/Api";
 import { SearchBar } from "react-native-elements";
+import SignOut from "../components/SignOut";
 
 // FixMe: implement other components and functions used in SearchScreen here (don't just put all the JSX in SearchScreen below)
 
@@ -20,12 +22,15 @@ function filterBySearch(data, param) {
       stock.Name.startsWith(param)
   );
 }
+function scaleSize(fontSize) {
+  const window = Dimensions.get('window');
+  return Math.round((fontSize / 375) * Math.min(window.width, window.height));
+}
+
 
 export default function SearchScreen({ navigation }) {
-  const { ServerURL, addToWatchlist } = useStocksContext();
-  const [state, setState] = useState({
-    /* FixMe: initial state here */
-  });
+  const { addToWatchlist } = useStocksContext();
+  const [state, setState] = useState({});
   const { loading, stockList, error } = useStockList();
   const [rowData, setRowData] = useState([]);
   const [searchQuery, setSearchQuery] = useState(null);
@@ -66,6 +71,7 @@ export default function SearchScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.titleText}>Type a company name or a stock symbol.</Text>
       <SearchBar
         placeholder="Search Stocks Here..."
         onChangeText={onChangeSearch}
@@ -87,13 +93,19 @@ export default function SearchScreen({ navigation }) {
 const styles = StyleSheet.create({
   // FixMe: add styles here ...
   // use scaleSize(x) to adjust sizes for small/large screens
+  titleText: {
+    color: "white",
+    fontSize: scaleSize(15),
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
   symbolText: {
     color: "white",
-    fontSize: 20,
+    fontSize: scaleSize(20),
   },
   symbolSearch: {
     color: "white",
-    fontSize: 20,
+    fontSize: scaleSize(20),
     margin: 15,
     height: 40,
     borderColor: "#7a42f4",
@@ -109,5 +121,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    marginTop: 20,
   },
 });

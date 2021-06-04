@@ -5,8 +5,8 @@ const StocksContext = React.createContext();
 
 const AV_API_KEY = "GKRUI3TTPZADU2T7";
 //const FMP_API_KEY = "1e866a76e34848836623e16619aadb55";
-const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
-//const FMP_API_KEY = "b40776c8f4a497b7699489254b470535";
+//const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
+const FMP_API_KEY = "b40776c8f4a497b7699489254b470535";
 const USERS_API_URL = "http://172.22.26.173:3000";
 
 async function getStocksByCode(search) {
@@ -37,10 +37,10 @@ export const StocksProvider = ({ children }) => {
 export const useStocksContext = () => {
   const [state, setState] = useContext(StocksContext);
   const [currentList, setCurrentList] = useState([]);
-  const [retrievedStocks, setRetrievedStocks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isNewLoad, setisNewLoad] = useState(true);
-  const [currentUser, setCurrentUser] = useState("tt");
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const [currentToken, setCurrentToken] = useState(null);
 
   // can put more code here
   async function postSymbolsToUser(userSymbols) {
@@ -49,6 +49,7 @@ export const useStocksContext = () => {
       headers: {
         accept: "application/json",
         "Content-type": "application/json",
+        Authorization: `Bearer ${currentToken}`,
       },
       body: JSON.stringify({
         email: currentUser,
@@ -63,7 +64,7 @@ export const useStocksContext = () => {
 
       return keys.filter((value) => value !== "token");
     } catch (error) {
-      // Error retrieving data
+      return;
     }
   };
 
@@ -71,24 +72,49 @@ export const useStocksContext = () => {
     //FixMe: add the new symbol to the watchlist, save it in useStockContext state and persist to AsyncStorage
     var isInvalidSymbol = currentList.includes(newSymbol);
     setLoading(true);
-    let stocks = [];
-    if (isInvalidSymbol === false || newSymbol === undefined) {
+    if (isInvalidSymbol === false && newSymbol !== undefined) {
+      //change this to setCurrentList([...currentList, newSymbol]);
       currentList.push(newSymbol);
       console.log("Katharina: ", currentList);
-      postSymbolsToUser(currentList);
+      await postSymbolsToUser(currentList);
 
       let symbolInfo = await getStocksByCode(newSymbol);
-      setState([...state, symbolInfo[0]]);
+      await setState([...state, symbolInfo[0]]);
       AsyncStorage.setItem(newSymbol, newSymbol);
     }
   }
 
+  async function setCurrentUserDetails(email, token) {
+    setCurrentUser(email);
+    setCurrentToken(token);
+  }
+
+  //debug this later
+  async function removeSymbol(symbol) {
+    AsyncStorage.removeItem(symbol);
+    setCurrentList(currentList.filter((element) => element !== symbol));
+    await postSymbolsToUser(currentList);
+    await setState(currentList);
+  }
+
+  useEffect(() => {
+    (async () => {
+      let retrievedList = await _retrieveData();
+
+      retrievedList.map((element) => {
+        addToWatchlist(element);
+      });
+    })();
+  }, []);
+
   useEffect(() => {
     //FixMe: Retrieve watchlist from persistent storage
     (async () => {
-      const returnedData = await getStocksFromDB("tt");
+      if (currentUser === undefined) {
+        return;
+      }
+      const returnedData = await getStocksFromDB(currentUser);
       const userSymbols = returnedData.Symbols;
-      console.log("user symbols from db", userSymbols);
       //await AsyncStorage.clear()
 
       let retrievedList = [];
@@ -101,7 +127,7 @@ export const useStocksContext = () => {
         console.log("retrieved list", retrievedList);
         if (userSymbols !== null) {
           userSymbols.map((symbol) => {
-            if (!retrievedList.includes(symbol)) {
+            if (retrievedList.includes(symbol) === false) {
               AsyncStorage.setItem(symbol, symbol);
               retrievedList.push(symbol);
             }
@@ -115,12 +141,12 @@ export const useStocksContext = () => {
       }
     })();
     setLoading(false);
-  }, []);
+  }, [currentUser]);
 
   return {
-    ServerURL: "http://131.181.190.87:3001",
     watchList: state,
-    loading: loading,
     addToWatchlist,
+    setCurrentUserDetails,
+    removeSymbol,
   };
 };

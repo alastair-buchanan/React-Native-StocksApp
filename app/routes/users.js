@@ -211,7 +211,7 @@ router.post("/login", function (req, res, next) {
       } else {
         //create and return JWT token
         const secretKey = "q)o2R4@#$h8*0";
-        const expiresIn = 10; // 1 day
+        const expiresIn = 60 * 60 * 24; // 1 day
         const exp = Date.now() + expiresIn * 1000;
         const token = jwt.sign({ email, exp }, secretKey);
         res.json({ token_type: "Bearer", token, expiresIn });

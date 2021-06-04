@@ -44,6 +44,9 @@ export default function StocksScreen({ route }) {
     });
   }, [watchList]);
 
+  //try mapping an array instead of a flatlist, see if that fixes
+  // function handleLongPress()
+
   function stock({ item }) {
     return (
       <View style={styles.container}><StockTab stock={item}/></View>

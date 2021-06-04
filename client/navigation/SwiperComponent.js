@@ -12,7 +12,7 @@ export const SwiperComponent = ({ stockInfo }) => {
   }, [])
 
   return (
-    <Swiper>
+    <Swiper style={styles.container}>
       <Swiper style={styles.wrapper} showsButtons={true}>
         <View style={styles.slide1}>
           <StockInfoTable stockInfo={stockInfo} />
@@ -44,5 +44,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 30,
     fontWeight: "bold",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingBottom: 60,
+    height: 2000,
   },
 });

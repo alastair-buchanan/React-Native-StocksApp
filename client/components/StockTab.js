@@ -14,18 +14,19 @@ import { StockInfoTable } from "./StockInfoTable";
 import { SwiperComponent } from "../navigation/SwiperComponent";
 import Swiper from "react-native-swiper/src";
 import { StockGraph } from "./StockGraph";
+import { useStocksContext } from "../contexts/StocksContext";
 
 export const StockTab = ({ stock }) => {
+  const { removeSymbol } = useStocksContext();
   const refRBSheet = useRef();
   const windowWidth = useWindowDimensions().width;
-
-  const tableTitle = ["1", "2", "3", "4"];
-  const tableData = ["a", "b", "c", "d"];
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => refRBSheet.current.open()}
+        onLongPress={() => removeSymbol(stock["symbol"])}
+        delayLongPress={500}
         style={styles.symbolButton}
         key={stock.symbol}
       >
@@ -42,13 +43,13 @@ export const StockTab = ({ stock }) => {
               <Text style={styles.stockText}>
                 {parseFloat(stock["changesPercentage"]) >= 0 && (
                   <Button
-                    title={stock["changesPercentage"].toString()}
+                    title={stock["changesPercentage"].toString() + "%"}
                     color="green"
                   ></Button>
                 )}
                 {parseFloat(stock["changesPercentage"]) < 0 && (
                   <Button
-                    title={stock["changesPercentage"].toString()}
+                    title={stock["changesPercentage"].toString() + "%"}
                     color="red"
                   />
                 )}
@@ -105,19 +106,9 @@ const styles = StyleSheet.create({
   },
   cellHeader: { justifyContent: "center" },
   head: { fontSize: 20, fontWeight: "bold" },
-  wrapper: { flexDirection: "row" },
   title: { flex: 1, fontWeight: "bold" },
-  wrapper: {},
-  slide1: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: Dimensions.get("window").width,
+  swiper: {
+    height: 400,
   },
-  slide2: {
-    //flex: 1,
-    //justifyContent: "center",
-    //alignItems: "center",
-    width: Dimensions.get("window").width,
-  },
+
 });
