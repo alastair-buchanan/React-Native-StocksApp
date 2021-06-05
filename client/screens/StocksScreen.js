@@ -19,10 +19,10 @@ function scaleSize(fontSize) {
 
 
 export default function StocksScreen({ route }) {
-  //const { loading, stocks, error } = useStockCodes(route.params.symbol);
   const [state, setState] = useState([]);
-  const { ServerURL, watchList, loading } = useStocksContext();
+  const {watchList, deleted} = useStocksContext();
   const [stockList, setStockList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const refRBSheet = useRef();
 
@@ -42,7 +42,25 @@ export default function StocksScreen({ route }) {
         console.log("watchList", watchList);
       }
     });
+
+    console.log("hit deleted", deleted)
+    let tempArray = state;
+    if (deleted !== undefined) {
+      tempArray.filter((element) => element !== deleted);
+      setState[tempArray];
+    }
+    setLoading(false);
   }, [watchList]);
+
+  useEffect(() => {
+    console.log("hit deleted", deleted)
+    let tempArray = state;
+    if (deleted !== undefined) {
+      tempArray.filter((element) => element !== deleted);
+      setState[tempArray];
+    }
+    
+  }, [deleted])
 
   //try mapping an array instead of a flatlist, see if that fixes
   // function handleLongPress()

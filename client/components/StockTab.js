@@ -15,6 +15,7 @@ import { SwiperComponent } from "../navigation/SwiperComponent";
 import Swiper from "react-native-swiper/src";
 import { StockGraph } from "./StockGraph";
 import { useStocksContext } from "../contexts/StocksContext";
+import { Icon } from "react-native-elements";
 
 export const StockTab = ({ stock }) => {
   const { removeSymbol } = useStocksContext();
@@ -25,7 +26,6 @@ export const StockTab = ({ stock }) => {
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => refRBSheet.current.open()}
-        onLongPress={() => removeSymbol(stock["symbol"])}
         delayLongPress={500}
         style={styles.symbolButton}
         key={stock.symbol}
@@ -55,6 +55,13 @@ export const StockTab = ({ stock }) => {
                 )}
               </Text>
             </DataTable.Cell>
+            <DataTable.Cell>
+              <TouchableOpacity>
+                <Text onPress={() => removeSymbol(stock["symbol"])}>
+                  <Icon style={{ textAlign: "right" }} name="delete" size={30} color="#e33057" />
+                </Text>
+              </TouchableOpacity>
+            </DataTable.Cell>
           </DataTable.Row>
         </DataTable>
       </TouchableOpacity>
@@ -74,7 +81,7 @@ export const StockTab = ({ stock }) => {
           },
         }}
       >
-        <SwiperComponent stockInfo={stock}/>
+        <SwiperComponent stockInfo={stock} />
       </RBSheet>
     </View>
   );
@@ -110,5 +117,4 @@ const styles = StyleSheet.create({
   swiper: {
     height: 400,
   },
-
 });

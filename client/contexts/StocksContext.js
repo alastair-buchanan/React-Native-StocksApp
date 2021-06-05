@@ -5,8 +5,8 @@ const StocksContext = React.createContext();
 
 const AV_API_KEY = "GKRUI3TTPZADU2T7";
 //const FMP_API_KEY = "1e866a76e34848836623e16619aadb55";
-//const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
-const FMP_API_KEY = "b40776c8f4a497b7699489254b470535";
+const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
+//const FMP_API_KEY = "b40776c8f4a497b7699489254b470535";
 const USERS_API_URL = "http://172.22.26.173:3000";
 
 async function getStocksByCode(search) {
@@ -41,6 +41,7 @@ export const useStocksContext = () => {
   const [isNewLoad, setisNewLoad] = useState(true);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentToken, setCurrentToken] = useState(null);
+  const [deletedSymbol, setDeletedSymbol] = useState(undefined);
 
   // can put more code here
   async function postSymbolsToUser(userSymbols) {
@@ -68,18 +69,18 @@ export const useStocksContext = () => {
     }
   };
 
+
   async function addToWatchlist(newSymbol) {
     //FixMe: add the new symbol to the watchlist, save it in useStockContext state and persist to AsyncStorage
+    console.log("state", state);
     var isInvalidSymbol = currentList.includes(newSymbol);
-    setLoading(true);
     if (isInvalidSymbol === false && newSymbol !== undefined) {
       //change this to setCurrentList([...currentList, newSymbol]);
       currentList.push(newSymbol);
-      console.log("Katharina: ", currentList);
-      await postSymbolsToUser(currentList);
+      postSymbolsToUser(currentList);
 
       let symbolInfo = await getStocksByCode(newSymbol);
-      await setState([...state, symbolInfo[0]]);
+      setState([...state, symbolInfo[0]]);
       AsyncStorage.setItem(newSymbol, newSymbol);
     }
   }
@@ -91,16 +92,20 @@ export const useStocksContext = () => {
 
   //debug this later
   async function removeSymbol(symbol) {
+    setDeletedSymbol(symbol);
+    let tempList = state.filter((element) => element.symbol !== symbol);
     AsyncStorage.removeItem(symbol);
-    setCurrentList(currentList.filter((element) => element !== symbol));
-    await postSymbolsToUser(currentList);
-    await setState(currentList);
+    setCurrentList(tempList);
+    //await postSymbolsToUser(currentList);
+    setState([tempList]);
   }
 
   useEffect(() => {
     (async () => {
+      if (currentList.length > 0) {
+        return;
+      }
       let retrievedList = await _retrieveData();
-
       retrievedList.map((element) => {
         addToWatchlist(element);
       });
@@ -108,7 +113,6 @@ export const useStocksContext = () => {
   }, []);
 
   useEffect(() => {
-    //FixMe: Retrieve watchlist from persistent storage
     (async () => {
       if (currentUser === undefined) {
         return;
@@ -116,35 +120,17 @@ export const useStocksContext = () => {
       const returnedData = await getStocksFromDB(currentUser);
       const userSymbols = returnedData.Symbols;
       //await AsyncStorage.clear()
-
-      let retrievedList = [];
-
-      if (currentList.length === 0) {
-        setisNewLoad(false);
-        setLoading(true);
-        retrievedList = await _retrieveData();
-        //setRetrievedStocks(retrievedList);
-        console.log("retrieved list", retrievedList);
-        if (userSymbols !== null) {
-          userSymbols.map((symbol) => {
-            if (retrievedList.includes(symbol) === false) {
-              AsyncStorage.setItem(symbol, symbol);
-              retrievedList.push(symbol);
-            }
-          });
-        }
-
-        console.log("retrieved data:", retrievedList);
-        retrievedList.map((element) => {
-          addToWatchlist(element);
+      if (userSymbols !== null) {
+        userSymbols.map((symbol) => {
+          addToWatchlist(symbol);
         });
       }
     })();
-    setLoading(false);
   }, [currentUser]);
 
   return {
     watchList: state,
+    deleted: deletedSymbol,
     addToWatchlist,
     setCurrentUserDetails,
     removeSymbol,
