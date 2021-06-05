@@ -49,6 +49,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingBottom: 60,
-    height: 2000,
+    height: Dimensions.get("window").height,
   },
 });

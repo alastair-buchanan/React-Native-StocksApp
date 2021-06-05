@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useContext, useState } from "react";
+import { TouchableOpacity } from "react-native";
 import { Button, Dimensions, StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import { TextInput } from "react-native-paper";
@@ -34,7 +35,8 @@ export default function SignInScreen({ navigation }) {
           AsyncStorage.setItem("token", res.token);
           navigation.navigate("BottomTabNavigator");
         } else {
-          //ADD in error handling here later setErrorMessage(res.ssomethingggggggggg)
+          //ADD in error handling here later 
+          setErrorMessage(res.message)
           console.log("incorrect login", res);
         }
       });
@@ -43,17 +45,30 @@ export default function SignInScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>Welcome to IFN666 Stocks</Text>
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
+      <TextInput
+        style={styles.textInput}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+      />
       <TextInput
         placeholder="Password"
         value={password}
+        style={styles.textInput}
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign in" onPress={() => signIn({ email, password })} />
-      {errorMessage.length === 0 && (
+      {errorMessage.length !== 0 && (
         <Text style={styles.errorText}>{errorMessage}</Text>
       )}
+      <TouchableOpacity
+        style={styles.button}
+        title="Sign in"
+        onPress={() => signIn({ email, password })}
+      >
+        <Text>Sign in</Text>
+      </TouchableOpacity>
+      
       <Text style={styles.text}>Don't have an account?</Text>
       <Text
         onPress={() => navigation.navigate("SignUpScreen")}
@@ -68,29 +83,47 @@ export default function SignInScreen({ navigation }) {
 const styles = StyleSheet.create({
   titleText: {
     color: "white",
-    fontSize: scaleSize(20),
+    fontSize: scaleSize(30),
     fontWeight: "bold",
     textAlign: "center",
+    paddingBottom: scaleSize(30),
   },
   errorText: {
     color: "red",
-    fontSize: scaleSize(10),
+    fontSize: scaleSize(12),
+    paddingTop: scaleSize(10),
   },
   text: {
     color: "white",
     fontSize: scaleSize(20),
-    marginTop: 20,
-    padding: 15,
+    marginTop: scaleSize(20),
+    padding: scaleSize(15),
     textAlign: "center",
+    width: scaleSize(300),
+  },
+  textInput: {
+    width: scaleSize(300),
+    marginTop: scaleSize(20),
   },
   linkText: {
     color: "#acacac",
     fontSize: scaleSize(20),
     fontWeight: "bold",
     textAlign: "center",
+    width: scaleSize(300),
   },
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+    //width: scaleSize(300),
+  },
+  button: {
+    marginTop: scaleSize(20),
+    elevation: scaleSize(8),
+    backgroundColor: "#009688",
+    borderRadius: scaleSize(10),
+    paddingVertical: scaleSize(10),
+    paddingHorizontal: scaleSize(12),
   },
 });

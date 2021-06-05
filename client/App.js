@@ -1,11 +1,9 @@
 import * as React from "react";
-import { Platform, StyleSheet, View, StatusBar, Text } from "react-native";
+import { Platform, StyleSheet, View, StatusBar } from "react-native";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import BottomTabNavigator from "./navigation/BottomTabNavigator";
 import { StocksProvider } from "./contexts/StocksContext";
-import LandingPageNavigation from "./navigation/LandingPageNavigation";
-import { AuthContext, useAuth } from "./contexts/AuthContext";
 import SignInScreen from "./screens/SignInScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 import SplashScreen from "./screens/SplashScreen";

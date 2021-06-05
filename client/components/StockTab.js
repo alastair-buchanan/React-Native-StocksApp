@@ -67,6 +67,7 @@ export const StockTab = ({ stock }) => {
       </TouchableOpacity>
       <RBSheet
         ref={refRBSheet}
+        height={320}
         closeOnDragDown={true}
         closeOnPressMask={false}
         customStyles={{

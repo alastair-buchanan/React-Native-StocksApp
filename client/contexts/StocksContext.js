@@ -5,8 +5,9 @@ const StocksContext = React.createContext();
 
 const AV_API_KEY = "GKRUI3TTPZADU2T7";
 //const FMP_API_KEY = "1e866a76e34848836623e16619aadb55";
-const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
+//const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
 //const FMP_API_KEY = "b40776c8f4a497b7699489254b470535";
+const FMP_API_KEY = "78afde332bca5468f9d9cba438c47fb1";
 const USERS_API_URL = "http://172.22.26.173:3000";
 
 async function getStocksByCode(search) {

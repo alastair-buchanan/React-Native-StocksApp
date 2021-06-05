@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { ScreenWidth } from "react-native-elements/dist/helpers";
-import { Button, Title } from "react-native-paper";
+import { Title } from "react-native-paper";
 import { useStockCodes } from "../api/Api";
 
 function scaleSize(fontSize) {
@@ -13,17 +13,21 @@ function scaleSize(fontSize) {
 }
 
 function filterByDate(data, param) {
-  let newData;
-  let newDate = new Date() - param;
-  newData = data.filter((stock) => new Date(stock.Date) < newDate);
+  var newDate = new Date();
+  newDate.setDate(newDate.getDate() - param);
+  let newData = {};
+  newData = data.filter((stock) => new Date(stock.labels) > newDate);
   return newData;
 }
+
+
 
 export const StockGraph = ({ stockInfo }) => {
   const { loading, stocks, error } = useStockCodes(stockInfo.symbol);
   const [labels, setLabels] = useState([]);
   const [values, setValues] = useState([]);
   const [filter, setFilter] = useState(undefined);
+  const [toggle, setToggle] = useState(false);
 
   const data = {
     labels: labels,
@@ -36,19 +40,31 @@ export const StockGraph = ({ stockInfo }) => {
     ],
   };
 
+  function handleToggle() {
+    if (toggle) {
+      setToggle(false);
+    } else {
+      setToggle(true);
+    }
+  }
+
   useEffect(() => {
     if (stocks.length > 0) {
       let newArray = stocks;
-      // if (filter !== undefined) {
-      //   newArray = filterByDate(stocks, filter);
-      // }
+      if (filter !== undefined) {
+        newArray = filterByDate(stocks, filter);
+      }
       const INDEX = newArray.length / 5;
       let newIndexes = newArray.map((element) => element.labels);
       let newLabels = filterElements(newIndexes, INDEX);
       setLabels(newLabels);
-      setValues(newArray.map((element) => element.data));
+      if (toggle) {
+        setValues(newArray.map((element) => element.percentage));
+      } else {
+        setValues(newArray.map((element) => element.data));
+      }
     }
-  }, [stocks, filter]);
+  }, [stocks, filter, toggle]);
 
   if (loading) {
     return <Text>Implement loading later</Text>;
@@ -58,12 +74,37 @@ export const StockGraph = ({ stockInfo }) => {
   }
   return (
     <View style={styles.container}>
-      <View>
-        <Button
+      <View style={styles.filterContainer}>
+        <TouchableOpacity
           onPress={() => setFilter(7)}
-          title="W"
-          color="#841584"
-        />
+          style={styles.dateFilter}
+        >
+          <Text style={styles.filterText}>1W</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setFilter(30)}
+          style={styles.dateFilter}
+        >
+          <Text style={styles.filterText}>1M</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setFilter(50)}
+          style={styles.dateFilter}
+        >
+          <Text style={styles.filterText}>50D</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setFilter(undefined)}
+          style={styles.dateFilter}
+        >
+          <Text style={styles.filterText}>R</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleToggle()}
+          style={styles.toggleButton}
+        >
+          <Text style={styles.filterText}>Toggle</Text>
+        </TouchableOpacity>
       </View>
       <Title style={styles.cellHeader}>
         <Text style={styles.head}>{stockInfo.name}</Text>
@@ -105,6 +146,34 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "white",
+  },
+  filterContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dateFilter: {
+    elevation: 8,
+    backgroundColor: "#009688",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    width: 50,
+  },
+  filterText: {
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase",
+  },
+  toggleButton: {
+    elevation: 8,
+    backgroundColor: "#009688",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    width: 100,
   },
 });
 

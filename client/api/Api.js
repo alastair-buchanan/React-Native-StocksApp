@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 // Api keys
 const AV_API_KEY = "COQ9LPN0Z8CC5Z8C";
-const FMP_API_KEY = "1e866a76e34848836623e16619aadb55";
+const FMP_API_KEY = "78afde332bca5468f9d9cba438c47fb1";
 
 // This function gets a list of different companies with symbols and industry
 async function getAllStocks() {
@@ -19,14 +19,26 @@ async function getAllStocks() {
 }
 
 // This function gets price history for a specific stock, searched by symbol
+// async function getStocksByCode(search) {
+//   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${search}&apikey=${AV_API_KEY}`;
+//   let res = await fetch(url);
+//   let data = await res.json();
+//   let stockPrices = data["Time Series (Daily)"];
+//   return Object.keys(stockPrices).map((element) => ({
+//     labels: new Date(element).toLocaleDateString("en-AU"),
+//     data: Number(stockPrices[element]["4. close"]),
+//   }));
+// }
+
 async function getStocksByCode(search) {
-  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${search}&apikey=${AV_API_KEY}`;
+  const url = `https://financialmodelingprep.com/api/v3/historical-price-full/${search}?apikey=${FMP_API_KEY}`;
   let res = await fetch(url);
   let data = await res.json();
-  let stockPrices = data["Time Series (Daily)"];
-  return Object.keys(stockPrices).map((element) => ({
-    labels: new Date(element).toLocaleDateString("en-AU"),
-    data: Number(stockPrices[element]["4. close"]),
+  let stockPrices = data["historical"];
+  return stockPrices.slice(0, 100).map((element) => ({
+    labels: new Date(element.date).toLocaleDateString("en-AU"),
+    data: element.close,
+    percentage: element.changePercent
   }));
 }
 
