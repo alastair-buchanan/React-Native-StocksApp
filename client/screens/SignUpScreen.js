@@ -11,14 +11,45 @@ function scaleSize(fontSize) {
   const window = Dimensions.get("window");
   return Math.round((fontSize / 375) * Math.min(window.width, window.height));
 }
+function validatePassword(data) {
+
+}
+
+
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [userNameError, setUserNameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  function validateLogin(email, password) {
+    let isValid = true;
+    var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    var passwordFormat = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    if (email.match(emailFormat) === null)
+    {
+      setEmailError("Email invalid");
+      isValid = false;
+    } 
+    if (password.match(passwordFormat) === null)
+    {
+      setPasswordError("Password should contain atleast one number and one special character");
+      isValid = false;
+    } 
+    return isValid;
+  }
 
   async function signUp(data) {
+    setEmailError("");
+    setPasswordError("");
+    const isLoginValid = validateLogin(data.email, data.password);
+    if (isLoginValid === false) {
+      return;
+    }
     fetch(`${API_URL}/users/register`, {
       method: "POST",
       headers: {
@@ -65,13 +96,19 @@ export default function SignUpScreen({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      {errorMessage.length === 0 && (
+      {errorMessage.length !== 0 && (
         <Text style={styles.errorText}>{errorMessage}</Text>
+      )}
+      {emailError.length !== 0 && (
+        <Text style={styles.errorText}>{emailError}</Text>
+      )}
+      {password.length !== 0 && (
+        <Text style={styles.errorText}>{passwordError}</Text>
       )}
       <TouchableOpacity
         style={styles.button}
         title="Sign up"
-        onPress={() => signUn({ email, userName, password })}
+        onPress={() => signUp({ email, userName, password })}
       >
         <Text>Sign up</Text>
       </TouchableOpacity>
@@ -98,7 +135,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    fontSize: scaleSize(10),
+    fontSize: scaleSize(12),
+    paddingTop: scaleSize(10),
   },
   text: {
     color: "white",
