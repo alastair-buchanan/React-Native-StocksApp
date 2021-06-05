@@ -38,14 +38,13 @@ export const StocksProvider = ({ children }) => {
 export const useStocksContext = () => {
   const [state, setState] = useContext(StocksContext);
   const [currentList, setCurrentList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isNewLoad, setisNewLoad] = useState(true);
   const [currentUser, setCurrentUser] = useState(undefined);
-  const [currentToken, setCurrentToken] = useState(null);
+  const [currentToken, setCurrentToken] = useState("");
   const [deletedSymbol, setDeletedSymbol] = useState(undefined);
 
   // can put more code here
   async function postSymbolsToUser(userSymbols) {
+    console.log(currentToken);
     fetch(`${USERS_API_URL}/users/symbols/update`, {
       method: "POST",
       headers: {
@@ -86,9 +85,9 @@ export const useStocksContext = () => {
     }
   }
 
-  async function setCurrentUserDetails(email, token) {
-    setCurrentUser(email);
+  function setCurrentUserDetails(email, token) {
     setCurrentToken(token);
+    setCurrentUser(email);
   }
 
   //debug this later

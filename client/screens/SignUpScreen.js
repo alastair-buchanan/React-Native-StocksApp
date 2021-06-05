@@ -11,11 +11,6 @@ function scaleSize(fontSize) {
   const window = Dimensions.get("window");
   return Math.round((fontSize / 375) * Math.min(window.width, window.height));
 }
-function validatePassword(data) {
-
-}
-
-
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -23,10 +18,9 @@ export default function SignUpScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [userNameError, setUserNameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  function validateLogin(email, password) {
+  function validateSignUp(email, password) {
     let isValid = true;
     var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     var passwordFormat = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
@@ -46,7 +40,7 @@ export default function SignUpScreen({ navigation }) {
   async function signUp(data) {
     setEmailError("");
     setPasswordError("");
-    const isLoginValid = validateLogin(data.email, data.password);
+    const isLoginValid = validateSignUp(data.email, data.password);
     if (isLoginValid === false) {
       return;
     }
@@ -68,8 +62,7 @@ export default function SignUpScreen({ navigation }) {
           AsyncStorage.setItem("token", res.token);
           navigation.navigate("BottomTabNavigator");
         } else {
-          //ADD in error handling here later setErrorMessage(res.ssomethingggggggggg)
-          console.log("incorrect registration", res);
+          setErrorMessage(res.Message);
         }
       });
   }

@@ -35,9 +35,7 @@ export default function SignInScreen({ navigation }) {
           AsyncStorage.setItem("token", res.token);
           navigation.navigate("BottomTabNavigator");
         } else {
-          //ADD in error handling here later 
-          setErrorMessage(res.message)
-          console.log("incorrect login", res);
+          setErrorMessage(res.message);
         }
       });
   }
