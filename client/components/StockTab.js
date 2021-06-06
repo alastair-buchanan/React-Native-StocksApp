@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: Dimensions.get("window").width,
+    height: 10,
     //justifyContent: "center",
   },
   stockText: {

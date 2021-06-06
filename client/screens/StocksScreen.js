@@ -24,6 +24,7 @@ export default function StocksScreen({ route }) {
 
   useEffect(() => {
     if (watchList !== undefined) {
+      watchList.filter((element) => element !== undefined);
       setState(watchList);
     }
   }, [watchList]);
@@ -67,7 +68,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "grey",
   },
   container: {
-    flex: 1,
     justifyContent: "center",
     width: Dimensions.get("window").width,
   },
