@@ -47,7 +47,11 @@ router.get("/:email/symbols", function (req, res, next) {
 
       let rows = await query;
       let userSymbols = Object.values(rows)[0].symbols;
-      return res.json({ Error: false, Message: "Success", Symbols: userSymbols });
+      return res.json({
+        Error: false,
+        Message: "Success",
+        Symbols: userSymbols,
+      });
     } catch (err) {
       console.log(err);
       res.json({ Error: true, Message: "Error executing MySQL query" });
@@ -218,36 +222,41 @@ router.post("/login", function (req, res, next) {
     });
 });
 
-
-
 router.post("/symbols/update", authorize, function (req, res, next) {
   if (!req.body.email || !req.body.symbols) {
     res.status(400).json({
-      message: 'error updating symbols'
-    })
-    console.log('error on request body: ', JSON.stringify(req.body))
+      message: "error updating symbols",
+    });
+    console.log("error on request body: ", JSON.stringify(req.body));
   } else {
     const filter = {
-      'email': req.body.email
-    }
+      email: req.body.email,
+    };
     const userSymbols = {
-      'symbols': JSON.stringify(userSymbols)
-    }
+      symbols: JSON.stringify(userSymbols),
+    };
     console.log(JSON.stringify(userSymbols));
     //{"symbols":"[\"GILD\",\"XEL\"]"}
     //console.log("update response", req.db('users').where(filter));
-    req.db('users').where(filter).update(userSymbols).then(_ => {
-      //Update this later with redirect.
-    //console.log("update response", res);
-
-      console.log("successsssssssssssssssssssssss");
-    }).catch(_ => {
-      res.status(500).json({
-        message: 'database error - not updated'
+    req
+      .db("users")
+      .where(filter)
+      .update(userSymbols)
+      .then((_) => {
+        //Update this later with redirect.
+        //console.log("update response", res);
+        res.json({ Error: false, Message: "Success" });
+        return;
       })
-    })
+      .catch((_) => {
+        res.status(500).json({
+          Error: true,
+          Message: "database error - not updated",
+        });
+      });
   }
 
+<<<<<<< HEAD
 
 
 
@@ -271,6 +280,19 @@ router.post("/symbols/update", authorize, function (req, res, next) {
   //   });
   //   return;
   // }
+=======
+  const email = req.body.email;
+  const symbols = req.body.symbols;
+
+  //verify body
+  if (!email || !symbols) {
+    res.status(400).json({
+      error: true,
+      message: "Request body incomplete - email and password required",
+    });
+    return;
+  }
+>>>>>>> 764a899eb8d7197c0eb1408f44df01a514f6e928
 
   // const queryUsers = req.db
   //   .from("users")
@@ -301,9 +323,5 @@ router.post("/symbols/update", authorize, function (req, res, next) {
   //     }
   //   });
 });
-
-
-
-
 
 module.exports = router;
