@@ -59,6 +59,7 @@ export default function SignUpScreen({ navigation }) {
       .then((res) => res.json())
       .then((res) => {
         if (res.token !== undefined) {
+          AsyncStorage.setItem("email", data.email);
           AsyncStorage.setItem("token", res.token);
           navigation.navigate("BottomTabNavigator");
         } else {

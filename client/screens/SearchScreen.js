@@ -10,7 +10,7 @@ import {
 import { useStocksContext } from "../contexts/StocksContext";
 import { useStockList } from "../api/Api";
 import { SearchBar } from "react-native-elements";
-import SignOut from "../components/SignOut";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // FixMe: implement other components and functions used in SearchScreen here (don't just put all the JSX in SearchScreen below)
 
@@ -23,17 +23,45 @@ function filterBySearch(data, param) {
   );
 }
 function scaleSize(fontSize) {
-  const window = Dimensions.get('window');
+  const window = Dimensions.get("window");
   return Math.round((fontSize / 375) * Math.min(window.width, window.height));
 }
 
-
 export default function SearchScreen({ navigation }) {
-  const { addToWatchlist } = useStocksContext();
+  const {
+    email,
+    addToWatchlist,
+    initialiseContextState,
+    getStocksFromDB,
+    _retrieveData,
+  } = useStocksContext();
   const [state, setState] = useState({});
   const { loading, stockList, error } = useStockList();
   const [rowData, setRowData] = useState([]);
   const [searchQuery, setSearchQuery] = useState(null);
+  //const [email, setEmail] = useState("");
+
+  async function initialiseData() {
+    var newState = [];
+    var newStocksFromDB = await getStocksFromDB();
+    var newStocksFromAsync = await _retrieveData();
+    if (newStocksFromAsync !== undefined || newStocksFromAsync !== null) {
+      newStocksFromAsync.map((element) => newState.push(element));
+    }
+
+    if (newStocksFromDB !== undefined || newStocksFromDB !== null) {
+      newStocksFromAsync.map((element) => {
+        let isInvalidElement = newState.includes(element);
+        if (!isInvalidElement) {
+          newState.push(element);
+          AsyncStorage.setItem(element, element);
+        }
+      });
+    }
+
+    initialiseContextState(newState);
+    //AsyncStorage.setItem("symbols", newState);
+  }
 
   // can put more code here
   useEffect(() => {
@@ -46,6 +74,8 @@ export default function SearchScreen({ navigation }) {
 
   useEffect(() => {
     // FixMe: fetch symbol names from the server and save in local SearchScreen state
+
+    initialiseData();
   }, []);
 
   function stock({ item }) {
@@ -71,7 +101,9 @@ export default function SearchScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titleText}>Type a company name or a stock symbol.</Text>
+      <Text style={styles.titleText}>
+        Type a company name or a stock symbol.
+      </Text>
       <SearchBar
         placeholder="Search Stocks Here..."
         onChangeText={onChangeSearch}
@@ -96,7 +128,7 @@ const styles = StyleSheet.create({
   titleText: {
     color: "white",
     fontSize: scaleSize(15),
-    textAlign: 'center',
+    textAlign: "center",
     paddingBottom: 10,
   },
   symbolText: {
