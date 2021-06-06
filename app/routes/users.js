@@ -177,13 +177,12 @@ router.post("/login", function (req, res, next) {
   const jwt = require("jsonwebtoken");
   const email = req.body.email;
   const password = req.body.password;
-  let isUserInvalid = false;
 
   //verify body
   if (!email || !password) {
     res.status(400).json({
       error: true,
-      message: "Request body incomplete - email and password required",
+      message: "Email and password required",
     });
     return;
   }
@@ -196,8 +195,8 @@ router.post("/login", function (req, res, next) {
   queryUsers
     .then((users) => {
       if (users.length === 0) {
-        isUserInvalid = true;
-        return;
+        
+        return res.status(401).json({ error: true, message: "User not found" });
       } else {
         //compared to stored password
         const user = users[0];
@@ -205,8 +204,8 @@ router.post("/login", function (req, res, next) {
       }
     })
     .then((match) => {
-      if (!match || isUserInvalid) {
-        res.status(401).json({ error: true, message: "Unauthorized" });
+      if (!match) {
+        res.status(401).json({ error: true, message: "Incorrect password" });
         return;
       } else {
         //create and return JWT token
@@ -260,47 +259,47 @@ router.post("/symbols/update", authorize, function (req, res, next) {
 
 
 
-  const email = req.body.email;
-  const symbols = req.body.symbols;
+  // const email = req.body.email;
+  // const symbols = req.body.symbols;
 
 
-  //verify body
-  if (!email || !symbols) {
-    res.status(400).json({
-      error: true,
-      message: "Request body incomplete - email and password required",
-    });
-    return;
-  }
+  // //verify body
+  // if (!email || !symbols) {
+  //   res.status(400).json({
+  //     error: true,
+  //     message: "Request body incomplete - email and password required",
+  //   });
+  //   return;
+  // }
 
-  const queryUsers = req.db
-    .from("users")
-    .select("*")
-    .where("email", "=", email);
+  // const queryUsers = req.db
+  //   .from("users")
+  //   .select("*")
+  //   .where("email", "=", email);
 
-  queryUsers
-    .then((users) => {
-      if (users.length === 0) {
-        res.status(401).json({ error: true, message: "User doesn't exist" });
-        return;
-      } else {
-        //compared to stored password
-        const user = users[0];
-      }
-    })
-    .then((match) => {
-      if (!match || isUserInvalid) {
-        res.status(401).json({ error: true, message: "Unauthorized" });
-        return;
-      } else {
-        //create and return JWT token
-        const secretKey = "q)o2R4@#$h8*0";
-        const expiresIn = 10; // 1 day
-        const exp = Date.now() + expiresIn * 1000;
-        const token = jwt.sign({ email, exp }, secretKey);
-        res.json({ token_type: "Bearer", token, expiresIn });
-      }
-    });
+  // queryUsers
+  //   .then((users) => {
+  //     if (users.length === 0) {
+  //       res.status(401).json({ error: true, message: "User doesn't exist" });
+  //       return;
+  //     } else {
+  //       //compared to stored password
+  //       const user = users[0];
+  //     }
+  //   })
+  //   .then((match) => {
+  //     if (!match || isUserInvalid) {
+  //       res.status(401).json({ error: true, message: "Unauthorized" });
+  //       return;
+  //     } else {
+  //       //create and return JWT token
+  //       const secretKey = "q)o2R4@#$h8*0";
+  //       const expiresIn = 10; // 1 day
+  //       const exp = Date.now() + expiresIn * 1000;
+  //       const token = jwt.sign({ email, exp }, secretKey);
+  //       res.json({ token_type: "Bearer", token, expiresIn });
+  //     }
+  //   });
 });
 
 
