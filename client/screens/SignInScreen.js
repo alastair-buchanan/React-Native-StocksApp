@@ -32,6 +32,7 @@ export default function SignInScreen({ navigation }) {
       .then((res) => {
         if (res.token !== undefined) {
           setCurrentUserDetails(email, res.token);
+          AsyncStorage.setItem("email", data.email);
           AsyncStorage.setItem("token", res.token);
           navigation.navigate("BottomTabNavigator");
         } else {

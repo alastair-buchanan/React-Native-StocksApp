@@ -12,63 +12,31 @@ import {
 import { useStocksContext } from "../contexts/StocksContext";
 import { StockTab } from "../components/StockTab";
 
-function scaleSize(fontSize) {
-  const window = Dimensions.get('window');
-  return Math.round((fontSize / 375) * Math.min(window.width, window.height));
-}
-
+const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
 
 export default function StocksScreen({ route }) {
   const [state, setState] = useState([]);
-  const {watchList, deleted} = useStocksContext();
+  const { watchList, deleted } = useStocksContext();
   const [stockList, setStockList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const refRBSheet = useRef();
 
-  // can put more code here
   useEffect(() => {
-    watchList.map((element) => {
-      if (element !== undefined) {
-        let isValidSymbol = false;
-        isValidSymbol = stockList.includes(element.symbol);
-
-        if (isValidSymbol === false) {
-          stockList.push(element.symbol);
-          setState([...state, element]);
-        }
-      } else {
-        console.log("You have ran out of Free api calls", state);
-        console.log("watchList", watchList);
-      }
-    });
-
-    console.log("hit deleted", deleted)
-    let tempArray = state;
-    if (deleted !== undefined) {
-      tempArray.filter((element) => element !== deleted);
-      setState[tempArray];
+    if (watchList !== undefined) {
+      setState(watchList);
     }
-    setLoading(false);
   }, [watchList]);
 
   useEffect(() => {
-    console.log("hit deleted", deleted)
-    let tempArray = state;
-    if (deleted !== undefined) {
-      tempArray.filter((element) => element !== deleted);
-      setState[tempArray];
-    }
-    
-  }, [deleted])
-
-  //try mapping an array instead of a flatlist, see if that fixes
-  // function handleLongPress()
+    setLoading(false);
+  }, [state]);
 
   function stock({ item }) {
     return (
-      <View style={styles.container}><StockTab stock={item}/></View>
-      
+      <View style={styles.container}>
+        <StockTab stock={item} />
+      </View>
     );
   }
 
@@ -78,11 +46,7 @@ export default function StocksScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={state}
-        renderItem={stock}
-        keyExtractor={(element) => element.symbol}
-      />
+      {state.map((item) => <StockTab stock={item} />)}
     </View>
   );
 }
@@ -105,7 +69,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    width: Dimensions.get('window').width,
+    width: Dimensions.get("window").width,
   },
   popup: {
     flex: 1,

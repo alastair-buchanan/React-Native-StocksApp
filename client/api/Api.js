@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 // Api keys
 const AV_API_KEY = "COQ9LPN0Z8CC5Z8C";
-const FMP_API_KEY = "78afde332bca5468f9d9cba438c47fb1";
+const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
 
 // This function gets a list of different companies with symbols and industry
 async function getAllStocks() {
@@ -41,6 +41,39 @@ async function getStocksByCode(search) {
     percentage: element.changePercent
   }));
 }
+
+async function getStockdetails(search) {
+  //const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${search}&apikey=${AV_API_KEY}`;
+  const url = `https://financialmodelingprep.com/api/v3/quote/${search}?apikey=${FMP_API_KEY}`;
+  let res = await fetch(url);
+  let data = await res.json();
+  return data;
+}
+
+export const useStockDetails = (search) => {
+  const [stockDetails, setStockDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setStockDetails(await getStockdetails(search));
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  return {
+    loading,
+    stockDetails,
+    error,
+  };
+};
+
 
 // useStockList functional component async hits the api and returns the stocks
 // loading status and errors.

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Dimensions,
@@ -16,11 +16,35 @@ import Swiper from "react-native-swiper/src";
 import { StockGraph } from "./StockGraph";
 import { useStocksContext } from "../contexts/StocksContext";
 import { Icon } from "react-native-elements";
+import { useStockDetails } from "../api/Api";
+
+const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
+
+// async function getStocksByCode(search) {
+//   //const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${search}&apikey=${AV_API_KEY}`;
+//   const url = `https://financialmodelingprep.com/api/v3/quote/${search}?apikey=${FMP_API_KEY}`;
+//   let res = await fetch(url);
+//   let data = await res.json();
+//   return data;
+// }
 
 export const StockTab = ({ stock }) => {
+  //const [stockDetails, setStockDetails] = useState();
   const { removeSymbol } = useStocksContext();
+  const { loading, stockDetails, error } = useStockDetails(stock);
   const refRBSheet = useRef();
   const windowWidth = useWindowDimensions().width;
+
+  if (loading) {
+    return(
+      <View><Text>implemenet loading later</Text></View>
+    )
+  }
+  if (error) {
+    return(
+      <View><Text>implemenet error later</Text></View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -33,23 +57,23 @@ export const StockTab = ({ stock }) => {
         <DataTable style={styles.container}>
           <DataTable.Row>
             <DataTable.Cell>
-              <Text style={styles.stockText}>{stock["symbol"]}</Text>
+              <Text style={styles.stockText}>{stockDetails[0]["symbol"]}</Text>
             </DataTable.Cell>
             <DataTable.Cell>
-              <Text style={styles.stockText}>{stock["open"]}</Text>
+              <Text style={styles.stockText}>{stockDetails[0]["open"]}</Text>
             </DataTable.Cell>
 
             <DataTable.Cell>
               <Text style={styles.stockText}>
-                {parseFloat(stock["changesPercentage"]) >= 0 && (
+                {parseFloat(stockDetails[0]["changesPercentage"]) >= 0 && (
                   <Button
-                    title={stock["changesPercentage"].toString() + "%"}
+                    title={stockDetails[0]["changesPercentage"].toString() + "%"}
                     color="green"
                   ></Button>
                 )}
-                {parseFloat(stock["changesPercentage"]) < 0 && (
+                {parseFloat(stockDetails[0]["changesPercentage"]) < 0 && (
                   <Button
-                    title={stock["changesPercentage"].toString() + "%"}
+                    title={stockDetails[0]["changesPercentage"].toString() + "%"}
                     color="red"
                   />
                 )}
@@ -57,7 +81,7 @@ export const StockTab = ({ stock }) => {
             </DataTable.Cell>
             <DataTable.Cell>
               <TouchableOpacity>
-                <Text onPress={() => removeSymbol(stock["symbol"])}>
+                <Text onPress={() => removeSymbol(stockDetails[0]["symbol"])}>
                   <Icon style={{ textAlign: "right" }} name="delete" size={30} color="#e33057" />
                 </Text>
               </TouchableOpacity>
@@ -82,7 +106,7 @@ export const StockTab = ({ stock }) => {
           },
         }}
       >
-        <SwiperComponent stockInfo={stock} />
+        <SwiperComponent stockInfo={stockDetails[0]} />
       </RBSheet>
     </View>
   );
