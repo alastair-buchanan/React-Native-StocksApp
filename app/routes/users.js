@@ -4,7 +4,7 @@ var router = express.Router();
 //var mysql = require("mysql2");
 
 const authorize = (req, res, next) => {
-  const authorization = req.headers.authorization;
+  const authorization = req.headers.Authorization;
   let token = null;
 
   //retrieve token
@@ -222,7 +222,7 @@ router.post("/login", function (req, res, next) {
     });
 });
 
-router.post("/symbols/update", authorize, function (req, res, next) {
+router.post("/symbols/update", function (req, res, next) {
   if (!req.body.email || !req.body.symbols) {
     res.status(400).json({
       message: "error updating symbols",
@@ -233,7 +233,7 @@ router.post("/symbols/update", authorize, function (req, res, next) {
       email: req.body.email,
     };
     const userSymbols = {
-      symbols: JSON.stringify(userSymbols),
+      symbols: JSON.stringify(req.body.symbols),
     };
     console.log(JSON.stringify(userSymbols));
     //{"symbols":"[\"GILD\",\"XEL\"]"}
@@ -256,7 +256,6 @@ router.post("/symbols/update", authorize, function (req, res, next) {
       });
   }
 
-<<<<<<< HEAD
 
 
 
@@ -280,19 +279,6 @@ router.post("/symbols/update", authorize, function (req, res, next) {
   //   });
   //   return;
   // }
-=======
-  const email = req.body.email;
-  const symbols = req.body.symbols;
-
-  //verify body
-  if (!email || !symbols) {
-    res.status(400).json({
-      error: true,
-      message: "Request body incomplete - email and password required",
-    });
-    return;
-  }
->>>>>>> 764a899eb8d7197c0eb1408f44df01a514f6e928
 
   // const queryUsers = req.db
   //   .from("users")
