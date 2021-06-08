@@ -1,17 +1,23 @@
 const { query } = require("express");
 var express = require("express");
 var router = express.Router();
+const secretKey = "q)o2R4@#$h8*0";
+const jwt = require("jsonwebtoken");
+
 //var mysql = require("mysql2");
 
 const authorize = (req, res, next) => {
-  const authorization = req.headers.Authorization;
+  const authorization = req.headers.authorization;
   let token = null;
-
-  //retrieve token
   if (authorization && authorization.split(" ").length === 2) {
     token = authorization.split(" ")[1];
   } else {
-    res.status(401).json({ error: true, message: "Unauthorized" });
+    res
+      .status(401)
+      .json({
+        error: true,
+        message: "Unauthorized",
+      });
     return;
   }
 
@@ -20,14 +26,14 @@ const authorize = (req, res, next) => {
     const decoded = jwt.verify(token, secretKey);
 
     if (decoded.exp < Date.now()) {
-      res.status(401).json({ error: true, message: "Unauthorized" });
+      res.status(401).json({ error: true, message: "Unauthorized 2" });
       return;
     }
 
     //allow user to access route
     next();
   } catch (err) {
-    res.status(401).json({ error: true, message: "Unauthorized" });
+    res.status(401).json({ error: true, message: "Unauthorized 3" });
   }
 };
 
@@ -58,7 +64,6 @@ router.get("/:email/symbols", function (req, res, next) {
     }
   })();
 });
-
 
 router.post("/register", (req, res) => {
   const bcrypt = require("bcrypt");
@@ -98,7 +103,7 @@ router.post("/register", (req, res) => {
     .then(() => {
       //create and return JWT token
       const secretKey = "q)o2R4@#$h8*0";
-      const expiresIn = 60 * 60 *24; // 1 day
+      const expiresIn = 60 * 60 * 24; // 1 day
       const exp = Date.now() + expiresIn * 1000;
       const token = jwt.sign({ email, exp }, secretKey);
       res.status(201).json({
@@ -134,7 +139,6 @@ router.post("/login", function (req, res, next) {
   queryUsers
     .then((users) => {
       if (users.length === 0) {
-        
         return res.status(401).json({ error: true, message: "User not found" });
       } else {
         //compared to stored password
@@ -149,7 +153,7 @@ router.post("/login", function (req, res, next) {
       } else {
         //create and return JWT token
         const secretKey = "q)o2R4@#$h8*0";
-        const expiresIn = 10; // 1 day
+        const expiresIn = 60 * 60 * 24; // 1 day
         const exp = Date.now() + expiresIn * 1000;
         const token = jwt.sign({ email, exp }, secretKey);
         res.json({ token_type: "Bearer", token, expiresIn });
