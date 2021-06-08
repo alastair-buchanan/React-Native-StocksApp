@@ -12,7 +12,6 @@ async function getToken() {
   } catch (error) {
     console.log("error getting token from async");
   }
-  console.log("state for auth", token);
   return token;
 }
 
