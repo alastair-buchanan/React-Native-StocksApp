@@ -12,7 +12,6 @@ import { SearchBar } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DataTable } from "react-native-paper";
 import { scaleSize } from "../components/Utils";
-import Toast from 'react-native-toast-message';
 
 // filterBySearch function filters stocks by symbol
 function filterBySearch(data, param) {
@@ -62,19 +61,6 @@ export default function SearchScreen({ navigation }) {
     const getTokenFromAsync = await AsyncStorage.getItem("token");
     
     if (getTokenFromAsync === null) {
-      Toast.show({
-        type: 'error',
-        position: 'top',
-        text1: 'Hello',
-        text2: 'This is some something 👋',
-        visibilityTime: 4000,
-        autoHide: true,
-        topOffset: 30,
-        bottomOffset: 40,
-        onShow: () => {},
-        onHide: () => {},
-        onPress: () => {}
-      });
       navigation.navigate("SignInScreen");
     } else {
       navigation.navigate("Stocks");
