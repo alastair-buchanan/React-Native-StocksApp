@@ -1,6 +1,7 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text } from "react-native";
 import { DataTable } from "react-native-paper";
+import { scaleSize } from "./Utils";
 
 export const StockInfoTable = ({ stockInfo }) => {
   return (
@@ -64,11 +65,11 @@ const styles = StyleSheet.create({
 
   stockText: {
     color: "white",
-    fontSize: 20,
+    fontSize: scaleSize(20),
   },
   symbolButton: {
-    marginTop: 20,
-    padding: 15,
+    marginTop: scaleSize(20),
+    padding: scaleSize(15),
 
     borderWidth: 1,
     borderBottomColor: "grey",
@@ -76,10 +77,10 @@ const styles = StyleSheet.create({
   cellHeader: { 
     justifyContent: "center",
     borderBottomColor: "white",
-    borderBottomWidth: 1
+    borderBottomWidth: scaleSize(1)
   },
   head: {
-    fontSize: 20,
+    fontSize: scaleSize(20),
     fontWeight: "bold",
     color: "white",
   },
@@ -94,6 +95,6 @@ const styles = StyleSheet.create({
   },
   row: {
     borderBottomColor: "white",
-    borderBottomWidth: 0.5
+    borderBottomWidth: 0.5,
   }
 });

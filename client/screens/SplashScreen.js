@@ -1,8 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
+import { scaleSize } from "../components/Utils";
 
-// fix later, add in loading component in the main body
+async function getToken() {
+  let token = null;
+
+  try {
+    token = await AsyncStorage.getItem("token");
+  } catch (error) {
+    console.log("error getting token from async");
+  }
+  console.log("state for auth", token);
+  return token;
+}
 
 export default function SplashScreen({ navigation }) {
   useEffect(() => {
@@ -16,20 +28,16 @@ export default function SplashScreen({ navigation }) {
     })();
   }, []);
   return (
-    <View>
-      <Text>Splash screen</Text>
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="grey" />
     </View>
   );
 }
 
-async function getToken() {
-  let token = null;
-
-  try {
-    token = await AsyncStorage.getItem("token");
-  } catch (error) {
-    console.log("error getting token from async");
-  }
-  console.log("state for auth", token);
-  return token;
-}
+const styles = StyleSheet.create({
+  loadingContainer: {
+    width: Dimensions.get("window").width,
+    justifyContent: "center",
+    marginTop: scaleSize(45),
+  },
+});

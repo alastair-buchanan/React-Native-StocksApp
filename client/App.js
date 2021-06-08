@@ -7,12 +7,17 @@ import { StocksProvider } from "./contexts/StocksContext";
 import SignInScreen from "./screens/SignInScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 import SplashScreen from "./screens/SplashScreen";
+import Toast from "react-native-toast-message";
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <View style={styles.container}>
+      <>
+        {/* ... */}
+        <Toast ref={(ref) => Toast.setRef(ref)} />
+      </>
       <StocksProvider>
         {Platform.OS === "ios" && <StatusBar barStyle="default" />}
         <NavigationContainer theme={DarkTheme}>

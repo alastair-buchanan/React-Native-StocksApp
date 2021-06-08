@@ -5,52 +5,57 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  useWindowDimensions,
   View,
+  ActivityIndicator,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { DataTable } from "react-native-paper";
-import { StockInfoTable } from "./StockInfoTable";
 import { SwiperComponent } from "../navigation/SwiperComponent";
-import Swiper from "react-native-swiper/src";
-import { StockGraph } from "./StockGraph";
 import { useStocksContext } from "../contexts/StocksContext";
 import { Icon } from "react-native-elements";
 import { useStockDetails } from "../api/Api";
-
-const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
-
-// async function getStocksByCode(search) {
-//   //const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${search}&apikey=${AV_API_KEY}`;
-//   const url = `https://financialmodelingprep.com/api/v3/quote/${search}?apikey=${FMP_API_KEY}`;
-//   let res = await fetch(url);
-//   let data = await res.json();
-//   return data;
-// }
+import { scaleSize } from "./Utils";
 
 export const StockTab = ({ stock }) => {
-  //const [stockDetails, setStockDetails] = useState();
   const { removeSymbol } = useStocksContext();
   const { loading, stockDetails, error } = useStockDetails(stock);
   const refRBSheet = useRef();
-  const windowWidth = useWindowDimensions().width;
+  const [outOfStocks, setOutOfStocks] = useState(false);
+
+  useEffect(() => {
+    setOutOfStocks(false);
+    if (stockDetails[0] === undefined) {
+      setOutOfStocks(true);
+    }
+  }, [stockDetails]);
 
   if (loading) {
-    return(
-      <View><Text>implemenet loading later</Text></View>
-    )
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="grey" />
+      </View>
+    );
   }
   if (error) {
-    return(
-      <View><Text>implemenet error later</Text></View>
-    )
+    return (
+      <View style={styles.container}>
+        <Text style={styles.stockText}>Error loading stock. Try again later.</Text>
+      </View>
+    );
+  }
+
+  if (outOfStocks) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.stockText}>Out of free API calls</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => refRBSheet.current.open()}
-        delayLongPress={500}
         style={styles.symbolButton}
         key={stock.symbol}
       >
@@ -67,13 +72,17 @@ export const StockTab = ({ stock }) => {
               <Text style={styles.stockText}>
                 {parseFloat(stockDetails[0]["changesPercentage"]) >= 0 && (
                   <Button
-                    title={stockDetails[0]["changesPercentage"].toString() + "%"}
+                    title={
+                      stockDetails[0]["changesPercentage"].toString() + "%"
+                    }
                     color="green"
                   ></Button>
                 )}
                 {parseFloat(stockDetails[0]["changesPercentage"]) < 0 && (
                   <Button
-                    title={stockDetails[0]["changesPercentage"].toString() + "%"}
+                    title={
+                      stockDetails[0]["changesPercentage"].toString() + "%"
+                    }
                     color="red"
                   />
                 )}
@@ -82,7 +91,12 @@ export const StockTab = ({ stock }) => {
             <DataTable.Cell>
               <TouchableOpacity>
                 <Text onPress={() => removeSymbol(stockDetails[0]["symbol"])}>
-                  <Icon style={{ textAlign: "right" }} name="delete" size={30} color="#e33057" />
+                  <Icon
+                    style={{ textAlign: "right" }}
+                    name="delete"
+                    size={30}
+                    color="#e33057"
+                  />
                 </Text>
               </TouchableOpacity>
             </DataTable.Cell>
@@ -116,30 +130,27 @@ const styles = StyleSheet.create({
   // FixMe: add styles here ...
   // use scaleSize(x) to adjust sizes for small/large screens
   container: {
-    flex: 1,
     width: Dimensions.get("window").width,
-    //justifyContent: "center",
+    justifyContent: "space-between",
+  },
+  loadingContainer: {
+    width: Dimensions.get("window").width,
+    justifyContent: "center",
+    marginTop: scaleSize(45),
   },
   stockText: {
     color: "white",
-    fontSize: 20,
+    fontSize: scaleSize(20),
   },
   symbolButton: {
-    marginTop: 20,
-    padding: 15,
+    marginTop: scaleSize(20),
+    padding: scaleSize(15),
     flex: 1,
     width: Dimensions.get("window").width,
     borderWidth: 1,
     borderBottomColor: "grey",
   },
-  popup: {
-    flex: 1,
-    width: Dimensions.get("window").width,
-  },
-  cellHeader: { justifyContent: "center" },
-  head: { fontSize: 20, fontWeight: "bold" },
-  title: { flex: 1, fontWeight: "bold" },
-  swiper: {
-    height: 400,
+  errorContainer: {
+    paddingBottom: 20,
   },
 });

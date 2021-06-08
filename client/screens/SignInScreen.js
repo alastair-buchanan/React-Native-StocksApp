@@ -1,17 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { TouchableOpacity } from "react-native";
-import { Button, Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import { TextInput } from "react-native-paper";
+import { API_URL, scaleSize } from "../components/Utils";
 import { useStocksContext } from "../contexts/StocksContext";
 
-const API_URL = "http://172.22.26.173:3000";
-
-function scaleSize(fontSize) {
-  const window = Dimensions.get("window");
-  return Math.round((fontSize / 375) * Math.min(window.width, window.height));
-}
 
 export default function SignInScreen({ navigation }) {
   const { setCurrentUserDetails } = useStocksContext();
@@ -67,7 +62,7 @@ export default function SignInScreen({ navigation }) {
       >
         <Text>Sign in</Text>
       </TouchableOpacity>
-      
+
       <Text style={styles.text}>Don't have an account?</Text>
       <Text
         onPress={() => navigation.navigate("SignUpScreen")}
