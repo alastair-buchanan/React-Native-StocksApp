@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 //import data from './nasdaq_stock_list.json';
 
-const FMP_API_KEY = "1e866a76e34848836623e16619aadb55";
+const FMP_API_KEY = "2bea2ab26ee9b946dc46e93dd983ef3b";
 
 // This function gets a list of different companies with symbols and industry
 async function getAllStocks() {
