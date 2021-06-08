@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 const secretKey = "q)o2R4@#$h8*0";
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 //var mysql = require("mysql2");
 
@@ -66,8 +67,6 @@ router.get("/:email/symbols", function (req, res, next) {
 });
 
 router.post("/register", (req, res) => {
-  const bcrypt = require("bcrypt");
-  const jwt = require("jsonwebtoken");
   const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
@@ -102,7 +101,6 @@ router.post("/register", (req, res) => {
     })
     .then(() => {
       //create and return JWT token
-      const secretKey = "q)o2R4@#$h8*0";
       const expiresIn = 60 * 60 * 24; // 1 day
       const exp = Date.now() + expiresIn * 1000;
       const token = jwt.sign({ email, exp }, secretKey);
@@ -117,8 +115,7 @@ router.post("/register", (req, res) => {
 });
 
 router.post("/login", function (req, res, next) {
-  const bcrypt = require("bcrypt");
-  const jwt = require("jsonwebtoken");
+  
   const email = req.body.email;
   const password = req.body.password;
 
@@ -152,7 +149,6 @@ router.post("/login", function (req, res, next) {
         return;
       } else {
         //create and return JWT token
-        const secretKey = "q)o2R4@#$h8*0";
         const expiresIn = 60 * 60 * 24; // 1 day
         const exp = Date.now() + expiresIn * 1000;
         const token = jwt.sign({ email, exp }, secretKey);
