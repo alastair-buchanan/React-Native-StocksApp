@@ -62,6 +62,7 @@ export const StockGraph = ({ stockInfo }) => {
       if (filter !== undefined) {
         newArray = filterByDate(stocks, filter);
       }
+      newArray = newArray.reverse();
       const INDEX = newArray.length / 5;
       let newIndexes = newArray.map((element) => element.labels);
       let newLabels = filterElements(newIndexes, INDEX);
