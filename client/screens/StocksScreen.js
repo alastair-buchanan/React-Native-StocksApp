@@ -1,14 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { ScrollView, StyleSheet, Text } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { StockTab } from "../components/StockTab";
-import { scaleSize } from "../components/Utils";
-
+import { scaleSize } from "../constants/Utils";
 
 export default function StocksScreen({ route }) {
   const [state, setState] = useState([]);
@@ -26,25 +20,14 @@ export default function StocksScreen({ route }) {
     setLoading(false);
   }, [state]);
 
-  function stock({ item }) {
-    return (
-      <View style={styles.container}>
-        <StockTab stock={item} />
-      </View>
-    );
-  }
-
-  console.log(state);
   if (loading) {
     return <Text style={styles.stockText}>Loading</Text>;
   }
 
   return (
     <ScrollView>
-      {state.map((item, index) => {
-        return (
-            <StockTab key={item} stock={item} />
-        );
+      {state.map((item) => {
+        return <StockTab key={item} stock={item} />;
       })}
     </ScrollView>
   );

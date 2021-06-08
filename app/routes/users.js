@@ -60,7 +60,6 @@ router.get("/:email/symbols", function (req, res, next) {
         Symbols: userSymbols,
       });
     } catch (err) {
-      console.log(err);
       res.json({ Error: true, Message: "Error executing MySQL query" });
     }
   })();
@@ -162,7 +161,6 @@ router.post("/symbols/update", authorize, function (req, res, next) {
     res.status(400).json({
       message: "error updating symbols",
     });
-    console.log("error on request body: ", JSON.stringify(req.body));
   } else {
     const filter = {
       email: req.body.email,
@@ -170,14 +168,11 @@ router.post("/symbols/update", authorize, function (req, res, next) {
     const userSymbols = {
       symbols: JSON.stringify(req.body.symbols),
     };
-    console.log(JSON.stringify(userSymbols));
     req
       .db("users")
       .where(filter)
       .update(userSymbols)
       .then((_) => {
-        //Update this later with redirect.
-        //console.log("update response", res);
         res.json({ Error: false, Message: "Success" });
         return;
       })

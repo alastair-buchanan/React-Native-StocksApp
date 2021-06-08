@@ -6,7 +6,7 @@ import { LineChart } from "react-native-chart-kit";
 import { ScreenWidth } from "react-native-elements/dist/helpers";
 import { Title } from "react-native-paper";
 import { useStockCodes } from "../api/Api";
-import { scaleSize } from "./Utils";
+import { scaleSize } from "../constants/Utils";
 
 function filterByDate(data, param) {
   var newDate = new Date();

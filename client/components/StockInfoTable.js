@@ -1,7 +1,7 @@
 import React from "react";
-import { Dimensions, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { DataTable } from "react-native-paper";
-import { scaleSize } from "./Utils";
+import { scaleSize } from "../constants/Utils";
 
 export const StockInfoTable = ({ stockInfo }) => {
   return (

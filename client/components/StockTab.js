@@ -14,7 +14,7 @@ import { SwiperComponent } from "../navigation/SwiperComponent";
 import { useStocksContext } from "../contexts/StocksContext";
 import { Icon } from "react-native-elements";
 import { useStockDetails } from "../api/Api";
-import { scaleSize } from "./Utils";
+import { scaleSize } from "../constants/Utils";
 
 export const StockTab = ({ stock }) => {
   const { removeSymbol } = useStocksContext();
@@ -127,8 +127,6 @@ export const StockTab = ({ stock }) => {
 };
 
 const styles = StyleSheet.create({
-  // FixMe: add styles here ...
-  // use scaleSize(x) to adjust sizes for small/large screens
   container: {
     width: Dimensions.get("window").width,
     justifyContent: "space-between",

@@ -12,37 +12,36 @@ const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = "SignIn";
 
 export default function LandingPageNavigation({ navigation, route }) {
-    useEffect(() => {
-      navigation.setOptions({ headerTitle: null });
-    }, [navigation, route]);
-  
-    return (
-      <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
-        <BottomTab.Screen
-          name="SignIn"
-          component={SignInScreen}
-          options={{
-            title: "SignIn",
-            tabBarIcon: ({ focused }) => (
-              <TabBarIcon focused={focused} name="home" />
-            ),
-          }}
-        />
-        <BottomTab.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{
-            title: "SignUp",
-            tabBarIcon: ({ focused }) => (
-              <TabBarIcon focused={focused} name="md-trending-up" />
-            ),
-          }}
-        />
-      </BottomTab.Navigator>
-    );
-  }
-  
-  function getHeaderTitle(route) {
-    return getFocusedRouteNameFromRoute(route) ?? INITIAL_ROUTE_NAME;
-  }
-  
+  useEffect(() => {
+    navigation.setOptions({ headerTitle: null });
+  }, [navigation, route]);
+
+  return (
+    <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+      <BottomTab.Screen
+        name="SignIn"
+        component={SignInScreen}
+        options={{
+          title: "SignIn",
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} name="home" />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="SignUp"
+        component={SignUpScreen}
+        options={{
+          title: "SignUp",
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} name="md-trending-up" />
+          ),
+        }}
+      />
+    </BottomTab.Navigator>
+  );
+}
+
+function getHeaderTitle(route) {
+  return getFocusedRouteNameFromRoute(route) ?? INITIAL_ROUTE_NAME;
+}

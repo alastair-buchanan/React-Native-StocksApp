@@ -7,9 +7,6 @@ import Swiper from "react-native-swiper/src";
 import { Dimensions } from "react-native";
 
 export const SwiperComponent = ({ stockInfo }) => {
-  useEffect(() => {
-    console.log("swiper data", stockInfo);
-  }, [])
 
   return (
     <Swiper style={styles.container}>
@@ -39,11 +36,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
-  },
-  text: {
-    color: "#fff",
-    fontSize: 30,
-    fontWeight: "bold",
   },
   container: {
     flex: 1,

@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import React, { useEffect } from "react";
+import { View, StyleSheet, Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
-import { scaleSize } from "../components/Utils";
+import { scaleSize } from "../constants/Utils";
 
 async function getToken() {
   let token = null;
@@ -26,6 +26,7 @@ export default function SplashScreen({ navigation }) {
       }
     })();
   }, []);
+
   return (
     <View style={styles.loadingContainer}>
       <ActivityIndicator size="large" color="grey" />

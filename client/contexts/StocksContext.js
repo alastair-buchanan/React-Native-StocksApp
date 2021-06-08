@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useContext, useEffect } from "react";
-import { USERS_API_URL } from "../components/Utils";
+import { USERS_API_URL } from "../constants/Utils";
 
 const StocksContext = React.createContext();
 
@@ -87,7 +87,6 @@ export const useStocksContext = () => {
       setState([...state, newSymbol]);
       AsyncStorage.setItem(newSymbol, newSymbol);
       const isTokenExpired = await postSymbolsToUser();
-      console.log("Res 2", isTokenExpired);
       return isTokenExpired;
     }
   }

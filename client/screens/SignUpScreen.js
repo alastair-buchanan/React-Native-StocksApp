@@ -1,16 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native";
-import { Button, Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import { TextInput } from "react-native-paper";
-
-const API_URL = "http://172.22.26.173:3000";
-
-function scaleSize(fontSize) {
-  const window = Dimensions.get("window");
-  return Math.round((fontSize / 375) * Math.min(window.width, window.height));
-}
+import { API_URL, scaleSize } from "../constants/Utils";
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -22,18 +16,19 @@ export default function SignUpScreen({ navigation }) {
 
   function validateSignUp(email, password) {
     let isValid = true;
-    var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    var emailFormat =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     var passwordFormat = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-    if (email.match(emailFormat) === null)
-    {
+    if (email.match(emailFormat) === null) {
       setEmailError("Email invalid");
       isValid = false;
-    } 
-    if (password.match(passwordFormat) === null)
-    {
-      setPasswordError("Password should contain atleast one number and one special character");
+    }
+    if (password.match(passwordFormat) === null) {
+      setPasswordError(
+        "Password should contain atleast one number and one special character"
+      );
       isValid = false;
-    } 
+    }
     return isValid;
   }
 

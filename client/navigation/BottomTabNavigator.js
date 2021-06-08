@@ -31,7 +31,7 @@ export default function BottomTabNavigator({ navigation, route }) {
     }
 
     return (
-      <View >
+      <View>
         <Button mode="contained" onPress={() => handlePress()}>
           Signout
         </Button>

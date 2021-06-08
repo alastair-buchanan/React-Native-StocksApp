@@ -11,7 +11,7 @@ import { useStockList } from "../api/Api";
 import { SearchBar } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DataTable } from "react-native-paper";
-import { scaleSize } from "../components/Utils";
+import { scaleSize } from "../constants/Utils";
 
 // filterBySearch function filters stocks by symbol
 function filterBySearch(data, param) {
@@ -59,7 +59,7 @@ export default function SearchScreen({ navigation }) {
   async function onPress(props) {
     await addToWatchlist(props);
     const getTokenFromAsync = await AsyncStorage.getItem("token");
-    
+
     if (getTokenFromAsync === null) {
       navigation.navigate("SignInScreen");
     } else {
@@ -140,14 +140,6 @@ const styles = StyleSheet.create({
   industryText: {
     color: "grey",
     fontSize: scaleSize(20),
-  },
-  symbolSearch: {
-    color: "white",
-    fontSize: scaleSize(20),
-    margin: scaleSize(15),
-    height: scaleSize(40),
-    borderColor: "#7a42f4",
-    borderWidth: scaleSize(1),
   },
   symbolButton: {
     marginTop: scaleSize(20),

@@ -4,9 +4,8 @@ import { TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import { TextInput } from "react-native-paper";
-import { API_URL, scaleSize } from "../components/Utils";
+import { API_URL, scaleSize } from "../constants/Utils";
 import { useStocksContext } from "../contexts/StocksContext";
-
 
 export default function SignInScreen({ navigation }) {
   const { setCurrentUserDetails } = useStocksContext();
@@ -110,7 +109,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    //width: scaleSize(300),
   },
   button: {
     marginTop: scaleSize(20),
