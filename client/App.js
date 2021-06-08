@@ -14,7 +14,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StocksProvider>
-        {Platform.OS === "ios" && <StatusBar barStyle="default" />}
+        {Platform.OS === "android" && <StatusBar barStyle="default" />}
         <NavigationContainer theme={DarkTheme}>
           <Stack.Navigator>
             <Stack.Screen
