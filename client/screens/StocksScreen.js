@@ -46,7 +46,13 @@ export default function StocksScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      {state.map((item) => <StockTab stock={item} />)}
+      {state.map((item) => {
+        return (
+          <View style={styles.container}>
+            <StockTab stock={item} />
+          </View>
+        );
+      })}
     </View>
   );
 }

@@ -57,54 +57,8 @@ router.get("/:email/symbols", function (req, res, next) {
       res.json({ Error: true, Message: "Error executing MySQL query" });
     }
   })();
-
-  // var query = "SELECT username, email, password FROM ??;";
-  // var table = ["users"];
-
-  // query = mysql.format(query, table);
-
-  // req.db.query(query, function (err, rows) {
-  //   if (err) {
-  //     res.json({
-  //       Error: true,
-  //       Message: `Error executing MySQL query: ${err}`,
-  //     });
-  //   } else {
-  //     res.json({
-  //       Error: false,
-  //       Message: "success",
-  //       users: rows,
-  //     });
-  //   }
-  // });
 });
 
-// router.post('/symbols/update', (req, res, next) => {
-//   if (!req.body.email || !req.body.symbols) {
-//     res.status(400).json({
-//       message: 'error updating symbols'
-//     })
-//     console.log('error on request body: ', JSON.stringify(req.body))
-//   } else {
-//     const filter = {
-//       'email': req.body.email
-//     }
-//     const userSymbols = {
-//       'symbols': req.body.symbols
-//     }
-
-//     req.db('users').where(filter).update(userSymbols).then(_ => {
-//       res.status(201).json({
-//         message: `successfully updated ${req.body.email}`
-//       })
-//       console.log("successful symbol update: ", JSON.stringify(filter))
-//     }).catch(_ => {
-//       res.status(500).json({
-//         message: 'database error - not updated'
-//       })
-//     })
-//   }
-// });
 
 router.post("/register", (req, res) => {
   const bcrypt = require("bcrypt");
@@ -144,7 +98,7 @@ router.post("/register", (req, res) => {
     .then(() => {
       //create and return JWT token
       const secretKey = "q)o2R4@#$h8*0";
-      const expiresIn = 10; // 1 day
+      const expiresIn = 60 * 60 *24; // 1 day
       const exp = Date.now() + expiresIn * 1000;
       const token = jwt.sign({ email, exp }, secretKey);
       res.status(201).json({
@@ -155,25 +109,6 @@ router.post("/register", (req, res) => {
         expiresIn,
       });
     });
-
-  // var query = "INSERT INTO users (email, username, password) VALUES (?, ?, ?);";
-  // var table = [email, username, password]
-
-  // query = mysql.format(query, table);
-
-  // req.db.query(query, function (err) {
-  //   if (err) {
-  //     res.json({
-  //       Error: true,
-  //       Message: `Error executing MySQL query: ${err}`,
-  //     });
-  //   } else {
-  //     res.json({
-  //       Error: false,
-  //       Message: "success",
-  //     });
-  //   }
-  // });
 });
 
 router.post("/login", function (req, res, next) {
@@ -214,7 +149,7 @@ router.post("/login", function (req, res, next) {
       } else {
         //create and return JWT token
         const secretKey = "q)o2R4@#$h8*0";
-        const expiresIn = 60 * 60 * 24; // 1 day
+        const expiresIn = 10; // 1 day
         const exp = Date.now() + expiresIn * 1000;
         const token = jwt.sign({ email, exp }, secretKey);
         res.json({ token_type: "Bearer", token, expiresIn });
@@ -222,7 +157,7 @@ router.post("/login", function (req, res, next) {
     });
 });
 
-router.post("/symbols/update", function (req, res, next) {
+router.post("/symbols/update", authorize, function (req, res, next) {
   if (!req.body.email || !req.body.symbols) {
     res.status(400).json({
       message: "error updating symbols",
@@ -236,8 +171,6 @@ router.post("/symbols/update", function (req, res, next) {
       symbols: JSON.stringify(req.body.symbols),
     };
     console.log(JSON.stringify(userSymbols));
-    //{"symbols":"[\"GILD\",\"XEL\"]"}
-    //console.log("update response", req.db('users').where(filter));
     req
       .db("users")
       .where(filter)
@@ -255,59 +188,6 @@ router.post("/symbols/update", function (req, res, next) {
         });
       });
   }
-
-
-
-
-
-
-
-
-
-
-
-
-  // const email = req.body.email;
-  // const symbols = req.body.symbols;
-
-
-  // //verify body
-  // if (!email || !symbols) {
-  //   res.status(400).json({
-  //     error: true,
-  //     message: "Request body incomplete - email and password required",
-  //   });
-  //   return;
-  // }
-
-  // const queryUsers = req.db
-  //   .from("users")
-  //   .select("*")
-  //   .where("email", "=", email);
-
-  // queryUsers
-  //   .then((users) => {
-  //     if (users.length === 0) {
-  //       res.status(401).json({ error: true, message: "User doesn't exist" });
-  //       return;
-  //     } else {
-  //       //compared to stored password
-  //       const user = users[0];
-  //     }
-  //   })
-  //   .then((match) => {
-  //     if (!match || isUserInvalid) {
-  //       res.status(401).json({ error: true, message: "Unauthorized" });
-  //       return;
-  //     } else {
-  //       //create and return JWT token
-  //       const secretKey = "q)o2R4@#$h8*0";
-  //       const expiresIn = 10; // 1 day
-  //       const exp = Date.now() + expiresIn * 1000;
-  //       const token = jwt.sign({ email, exp }, secretKey);
-  //       res.json({ token_type: "Bearer", token, expiresIn });
-  //     }
-  //   });
 });
 
 module.exports = router;
