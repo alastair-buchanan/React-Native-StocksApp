@@ -5,14 +5,14 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  Dimensions,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { useStockList } from "../api/Api";
 import { SearchBar } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-// FixMe: implement other components and functions used in SearchScreen here (don't just put all the JSX in SearchScreen below)
+import { DataTable } from "react-native-paper";
+import { scaleSize } from "../components/Utils";
+import Toast from 'react-native-toast-message';
 
 // filterBySearch function filters stocks by symbol
 function filterBySearch(data, param) {
@@ -22,24 +22,19 @@ function filterBySearch(data, param) {
       stock.Name.startsWith(param)
   );
 }
-function scaleSize(fontSize) {
-  const window = Dimensions.get("window");
-  return Math.round((fontSize / 375) * Math.min(window.width, window.height));
-}
 
 export default function SearchScreen({ navigation }) {
   const {
-    email,
     addToWatchlist,
-    initialiseContextState,
     getStocksFromDB,
     _retrieveData,
+    initialiseContextState,
   } = useStocksContext();
-  const [state, setState] = useState({});
-  const { loading, stockList, error } = useStockList();
+  const { stockList } = useStockList();
   const [rowData, setRowData] = useState([]);
   const [searchQuery, setSearchQuery] = useState(null);
-  //const [email, setEmail] = useState("");
+
+  const onChangeSearch = (query) => setSearchQuery(query);
 
   async function initialiseData() {
     var newState = [];
@@ -58,12 +53,39 @@ export default function SearchScreen({ navigation }) {
         }
       });
     }
-
     initialiseContextState(newState);
-    //AsyncStorage.setItem("symbols", newState);
   }
 
-  // can put more code here
+  //add in notification
+  async function onPress(props) {
+    await addToWatchlist(props);
+    const getTokenFromAsync = await AsyncStorage.getItem("token");
+    
+    if (getTokenFromAsync === null) {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Hello',
+        text2: 'This is some something 👋',
+        visibilityTime: 4000,
+        autoHide: true,
+        topOffset: 30,
+        bottomOffset: 40,
+        onShow: () => {},
+        onHide: () => {},
+        onPress: () => {}
+      });
+      navigation.navigate("SignInScreen");
+    } else {
+      navigation.navigate("Stocks");
+    }
+  }
+
+  useEffect(() => {
+    initialiseData(); // FixMe: fetch symbol names from the server and save in local SearchScreen state
+  }, []);
+
+  //
   useEffect(() => {
     let data = stockList;
     if (searchQuery !== null) {
@@ -72,32 +94,28 @@ export default function SearchScreen({ navigation }) {
     setRowData(data);
   }, [stockList, searchQuery, rowData.props]);
 
-  useEffect(() => {
-    // FixMe: fetch symbol names from the server and save in local SearchScreen state
-
-    initialiseData();
-  }, []);
-
   function stock({ item }) {
     return (
       <TouchableOpacity
         style={styles.symbolButton}
-        onPress={() => addToWatchlist(item.Symbol)}
+        onPress={() => onPress(item.Symbol)}
       >
-        <Text style={styles.symbolText}>
-          {item.Symbol} {item.Industry}
-        </Text>
-        <Text style={styles.symbolText}>{item.Name}</Text>
+        <DataTable>
+          <DataTable.Row>
+            <DataTable.Cell>
+              <Text style={styles.symbolText}>{item.Symbol}</Text>
+            </DataTable.Cell>
+            <DataTable.Cell>
+              <Text style={styles.industryText}>{item.Industry}</Text>
+            </DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <Text style={styles.symbolText}>{item.Name}</Text>
+          </DataTable.Row>
+        </DataTable>
       </TouchableOpacity>
     );
   }
-
-  function onPress({ item }) {
-    () => addToWatchlist(item.Symbol);
-    () => navigation.navigate("Stocks", { symbol: item.Symbol });
-  }
-
-  const onChangeSearch = (query) => setSearchQuery(query);
 
   return (
     <View style={styles.container}>
@@ -123,36 +141,38 @@ export default function SearchScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  // FixMe: add styles here ...
-  // use scaleSize(x) to adjust sizes for small/large screens
   titleText: {
     color: "white",
     fontSize: scaleSize(15),
     textAlign: "center",
-    paddingBottom: 10,
+    paddingBottom: scaleSize(10),
   },
   symbolText: {
     color: "white",
     fontSize: scaleSize(20),
   },
+  industryText: {
+    color: "grey",
+    fontSize: scaleSize(20),
+  },
   symbolSearch: {
     color: "white",
     fontSize: scaleSize(20),
-    margin: 15,
-    height: 40,
+    margin: scaleSize(15),
+    height: scaleSize(40),
     borderColor: "#7a42f4",
-    borderWidth: 1,
+    borderWidth: scaleSize(1),
   },
   symbolButton: {
-    marginTop: 20,
-    padding: 15,
+    marginTop: scaleSize(20),
+    padding: scaleSize(15),
 
-    borderWidth: 1,
+    borderWidth: scaleSize(1),
     borderBottomColor: "grey",
   },
   container: {
     flex: 1,
     justifyContent: "center",
-    marginTop: 20,
+    marginTop: scaleSize(20),
   },
 });

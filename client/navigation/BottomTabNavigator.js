@@ -3,12 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import TabBarIcon from "../components/TabBarIcon";
 import StocksScreen from "../screens/StocksScreen";
 import SearchScreen from "../screens/SearchScreen";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { HomeScreen } from "../screens/HomeScreen";
-import { Tab } from "react-native-elements/dist/tab/tab";
-import SignOut from "../components/SignOut";
-import { View, Text } from "react-native";
-import { Button, DataTable } from "react-native-paper";
+import { View } from "react-native";
+import { Button } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BottomTab = createBottomTabNavigator();
@@ -26,6 +23,7 @@ export default function BottomTabNavigator({ navigation, route }) {
     async function handlePress() {
       try {
         AsyncStorage.removeItem("token");
+        AsyncStorage.removeItem("email");
         navigation.navigate("SignInScreen");
       } catch (error) {
         console.log("Error signing out", error);

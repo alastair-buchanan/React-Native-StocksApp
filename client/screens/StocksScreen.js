@@ -1,26 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Button,
-  Dimensions,
-  FlatList,
-  RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { StockTab } from "../components/StockTab";
+import { scaleSize } from "../components/Utils";
 
-const FMP_API_KEY = "cbf32ae2c42284acaaf341bcb3c243e9";
 
 export default function StocksScreen({ route }) {
   const [state, setState] = useState([]);
-  const { watchList, deleted } = useStocksContext();
-  const [stockList, setStockList] = useState([]);
+  const { watchList } = useStocksContext();
   const [loading, setLoading] = useState(true);
-
-  const refRBSheet = useRef();
 
   useEffect(() => {
     if (watchList !== undefined) {
@@ -41,38 +34,25 @@ export default function StocksScreen({ route }) {
     );
   }
 
+  console.log(state);
   if (loading) {
     return <Text style={styles.stockText}>Loading</Text>;
   }
 
   return (
-    <View style={styles.container}>
-      {state.map((item) => <StockTab stock={item} />)}
-    </View>
+    <ScrollView>
+      {state.map((item, index) => {
+        return (
+            <StockTab key={item} stock={item} />
+        );
+      })}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  // FixMe: add styles here ...
-  // use scaleSize(x) to adjust sizes for small/large screens
-
   stockText: {
     color: "white",
-    fontSize: 20,
-  },
-  symbolButton: {
-    marginTop: 20,
-    padding: 15,
-
-    borderWidth: 1,
-    borderBottomColor: "grey",
-  },
-  container: {
-    justifyContent: "center",
-    width: Dimensions.get("window").width,
-  },
-  popup: {
-    flex: 1,
-    width: Dimensions.get("window").width,
+    fontSize: scaleSize(20),
   },
 });

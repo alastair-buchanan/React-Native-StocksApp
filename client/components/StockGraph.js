@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { ScreenWidth } from "react-native-elements/dist/helpers";
 import { Title } from "react-native-paper";
 import { useStockCodes } from "../api/Api";
-
-function scaleSize(fontSize) {
-  const window = Dimensions.get("window");
-  return Math.round((fontSize / 375) * Math.min(window.width, window.height));
-}
+import { scaleSize } from "./Utils";
 
 function filterByDate(data, param) {
   var newDate = new Date();
@@ -20,7 +16,19 @@ function filterByDate(data, param) {
   return newData;
 }
 
+const chartConfig = {
+  backgroundColor: "#222020",
+  backgroundGradientFrom: "#222020",
+  backgroundGradientTo: "#222020",
+  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+  strokeWidth: 2,
+  barPercentage: 0.5,
+  useShadowColorFromDataset: false,
+  fillShadowGradient: "#AD0C0C",
+};
 
+const filterElements = (arr, nth) => arr.filter((e, i) => i % nth === nth - 1);
 
 export const StockGraph = ({ stockInfo }) => {
   const { loading, stocks, error } = useStockCodes(stockInfo.symbol);
@@ -74,6 +82,9 @@ export const StockGraph = ({ stockInfo }) => {
   }
   return (
     <View style={styles.container}>
+      <Title style={styles.cellHeader}>
+        <Text style={styles.head}>{stockInfo.name}</Text>
+      </Title>
       <View style={styles.filterContainer}>
         <TouchableOpacity
           onPress={() => setFilter(7)}
@@ -88,10 +99,10 @@ export const StockGraph = ({ stockInfo }) => {
           <Text style={styles.filterText}>1M</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setFilter(50)}
+          onPress={() => setFilter(60)}
           style={styles.dateFilter}
         >
-          <Text style={styles.filterText}>50D</Text>
+          <Text style={styles.filterText}>2M</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setFilter(undefined)}
@@ -106,9 +117,6 @@ export const StockGraph = ({ stockInfo }) => {
           <Text style={styles.filterText}>Toggle</Text>
         </TouchableOpacity>
       </View>
-      <Title style={styles.cellHeader}>
-        <Text style={styles.head}>{stockInfo.name}</Text>
-      </Title>
 
       <LineChart
         data={data}
@@ -153,12 +161,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dateFilter: {
-    elevation: 8,
-    backgroundColor: "#009688",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    width: 50,
+    elevation: scaleSize(8),
+    backgroundColor: "grey",
+    borderRadius: scaleSize(10),
+    paddingVertical: scaleSize(10),
+    paddingHorizontal: scaleSize(12),
+    width: scaleSize(50),
   },
   filterText: {
     fontSize: 14,
@@ -168,25 +176,11 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   toggleButton: {
-    elevation: 8,
-    backgroundColor: "#009688",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    width: 100,
+    elevation: scaleSize(8),
+    backgroundColor: "grey",
+    borderRadius: scaleSize(10),
+    paddingVertical: scaleSize(10),
+    paddingHorizontal: scaleSize(12),
+    width: scaleSize(100),
   },
 });
-
-const chartConfig = {
-  backgroundColor: "#222020",
-  backgroundGradientFrom: "#222020",
-  backgroundGradientTo: "#222020",
-  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-  strokeWidth: 2,
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false,
-  fillShadowGradient: "#AD0C0C",
-};
-
-const filterElements = (arr, nth) => arr.filter((e, i) => i % nth === nth - 1);
