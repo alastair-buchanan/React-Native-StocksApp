@@ -90,7 +90,8 @@ export const useStocksContext = () => {
     let res = await fetch(`${USERS_API_URL}/users/${user}/symbols`);
     let data = await res.json();
 
-    if (data["Symbols"].length > 0) {
+    if (data["Symbols"] !== null) {
+      if (data["Symbols"].length > 0) {
       let newArray = [];
       data["Symbols"].map((element) => {
         var isInvalidSymbol = state.includes(element);
@@ -100,6 +101,7 @@ export const useStocksContext = () => {
         }
       });
       return newArray;
+    }
     } else {
       console.log("Error getting stocks from DB");
     }
