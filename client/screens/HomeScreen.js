@@ -3,6 +3,10 @@ import { View, Text, Image } from "react-native";
 import { StyleSheet } from "react-native";
 import { scaleSize } from "../constants/Utils";
 
+/**
+ * This functional component returns information to the user on how to use the
+ * application.
+ */
 export const HomeScreen = () => {
   return (
     <View style={styles.container}>

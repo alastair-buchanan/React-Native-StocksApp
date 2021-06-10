@@ -8,6 +8,14 @@ import { Title } from "react-native-paper";
 import { useStockCodes } from "../api/Api";
 import { scaleSize } from "../constants/Utils";
 
+/**
+ * This function receives an array of objects and number of days to filter by, 
+ * filters the array and then returns the new array.
+ * 
+ * @param {Array<Object>} data 
+ * @param {Number} param - number of days
+ * @returns {Array<Object>} newData - filtered array
+ */
 function filterByDate(data, param) {
   var newDate = new Date();
   newDate.setDate(newDate.getDate() - param);
@@ -16,6 +24,9 @@ function filterByDate(data, param) {
   return newData;
 }
 
+/**
+ * ChartConfig contains the configuration information for the graphing component.
+ */
 const chartConfig = {
   backgroundColor: "#222020",
   backgroundGradientFrom: "#222020",
@@ -28,8 +39,21 @@ const chartConfig = {
   fillShadowGradient: "#AD0C0C",
 };
 
+/**
+ * filterElements receives an array and a number and filters the elements based on
+ * thats nth index. This is to reduce the amount of labels showing on the graph.
+ * 
+ * @param {Array} arr 
+ * @param {Number} nth 
+ */
 const filterElements = (arr, nth) => arr.filter((e, i) => i % nth === nth - 1);
 
+/**
+ * This functional component displays the graph of a specific stock, it can be 
+ * toggled to show percentage data.
+ * 
+ * @param {Object} stockInfo 
+ */
 export const StockGraph = ({ stockInfo }) => {
   const { loading, stocks, error } = useStockCodes(stockInfo.symbol);
   const [labels, setLabels] = useState([]);
@@ -37,6 +61,9 @@ export const StockGraph = ({ stockInfo }) => {
   const [filter, setFilter] = useState(undefined);
   const [toggle, setToggle] = useState(false);
 
+  /**
+   * data contains the information displayed on the graph.
+   */
   const data = {
     labels: labels,
     datasets: [
@@ -48,6 +75,9 @@ export const StockGraph = ({ stockInfo }) => {
     ],
   };
 
+  /**
+   * This function sets the toggle between true and false
+   */
   function handleToggle() {
     if (toggle) {
       setToggle(false);
@@ -56,17 +86,23 @@ export const StockGraph = ({ stockInfo }) => {
     }
   }
 
+  /**
+   * This useEffect sets the data for displaying on the graph. This useEffect
+   * runs when stocks is initialised and when the filter is toggled or the filter
+   * is changed, the filter filters the graph by date, the toggle toggles from 
+   * absolute and percentage data.
+   */
   useEffect(() => {
     if (stocks.length > 0) {
-      let newArray = stocks;
+      let newArray = stocks.reverse();
       if (filter !== undefined) {
         newArray = filterByDate(stocks, filter);
       }
-      newArray = newArray.reverse();
       const INDEX = newArray.length / 5;
       let newIndexes = newArray.map((element) => element.labels);
       let newLabels = filterElements(newIndexes, INDEX);
-      setLabels(newLabels);
+      let reversedLabels = newLabels;
+      setLabels(reversedLabels);
       if (toggle) {
         setValues(newArray.map((element) => element.percentage));
       } else {
@@ -133,11 +169,8 @@ export const StockGraph = ({ stockInfo }) => {
 };
 
 const styles = StyleSheet.create({
-  // FixMe: add styles here ...
-  // use scaleSize(x) to adjust sizes for small/large screens
   head: {
-    //justifyContent: "center",
-    fontSize: 20,
+    fontSize: scaleSize(20),
     fontWeight: "bold",
     color: "white",
   },
@@ -149,10 +182,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    //paddingBottom: 60,
   },
   errorText: {
-    fontSize: 20,
+    fontSize: scaleSize(20),
     fontWeight: "bold",
     color: "white",
   },

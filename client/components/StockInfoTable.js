@@ -1,9 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { TouchableOpacity } from "react-native";
 import { StyleSheet, Text } from "react-native";
 import { DataTable } from "react-native-paper";
 import { scaleSize } from "../constants/Utils";
 
+/**
+ * This functional component returns information on a stock in table format. The
+ * user can toggle between percentage and absolute values.
+ * 
+ * @param {Object} stockInfo 
+ * @returns 
+ */
 export const StockInfoTable = ({ stockInfo }) => {
+  const [toggle, setToggle] = useState(false);
+  const [dayLow, setDayLow] = useState(null);
+  const [dayOpen, setDayOpen] = useState(null);
+  const [dayHigh, setDayHigh] = useState(null);
+  const [dayClose, setDayClose] = useState(null);
+  const [volume, setVolume] = useState(null);
+
+  /**
+   * This function sets the toggle between true and false.
+   */
+  function handleToggle() {
+    if (toggle) {
+      setToggle(false);
+    } else {
+      setToggle(true);
+    }
+  }
+
+  /**
+   * This useEffect sets the information between absolute or percentage based on 
+   * the toggle state.
+   */
+  useEffect(() => {
+    const low = stockInfo.dayLow;
+    const high = stockInfo.dayHigh;
+    const close = stockInfo.price;
+    const open = stockInfo.open;
+    const previousClose = stockInfo.previousClose;
+    setDayLow(low);
+    setDayOpen(open);
+    setDayHigh(high);
+    setDayClose(close);
+    setVolume(stockInfo.volume);
+    if (toggle) {
+      setDayLow(1 - (open / low) + "%");
+      setDayOpen(1 - (previousClose / open) + "%");
+      setDayHigh(1 - (open / high) + "%");
+      setDayClose(1 - (open / high) + "%");
+      setVolume(stockInfo.changesPercentage + "%");
+    }
+  }, [stockInfo, toggle]);
+
   return (
     <DataTable>
       <DataTable.Header>
@@ -17,14 +67,14 @@ export const StockInfoTable = ({ stockInfo }) => {
           <Text style={styles.title}>OPEN</Text>
         </DataTable.Cell>
         <DataTable.Cell numeric>
-          <Text style={styles.number}>{stockInfo.open}</Text>
+          <Text style={styles.number}>{dayOpen}</Text>
         </DataTable.Cell>
         <DataTable.Cell></DataTable.Cell>
         <DataTable.Cell>
           <Text style={styles.title}>LOW</Text>
         </DataTable.Cell>
         <DataTable.Cell numeric>
-          <Text style={styles.number}>{stockInfo.dayLow}</Text>
+          <Text style={styles.number}>{dayLow}</Text>
         </DataTable.Cell>
       </DataTable.Row>
 
@@ -33,14 +83,14 @@ export const StockInfoTable = ({ stockInfo }) => {
           <Text style={styles.title}>CLOSE</Text>
         </DataTable.Cell>
         <DataTable.Cell numeric>
-          <Text style={styles.number}>{stockInfo.price}</Text>
+          <Text style={styles.number}>{dayClose}</Text>
         </DataTable.Cell>
         <DataTable.Cell></DataTable.Cell>
         <DataTable.Cell>
           <Text style={styles.title}>HIGH</Text>
         </DataTable.Cell>
         <DataTable.Cell numeric>
-          <Text style={styles.number}>{stockInfo.dayHigh}</Text>
+          <Text style={styles.number}>{dayHigh}</Text>
         </DataTable.Cell>
       </DataTable.Row>
 
@@ -49,20 +99,24 @@ export const StockInfoTable = ({ stockInfo }) => {
           <Text style={styles.title}>VOLUME</Text>
         </DataTable.Cell>
         <DataTable.Cell numeric>
-          <Text style={styles.number}>{stockInfo.volume}</Text>
+          <Text style={styles.number}>{volume}</Text>
         </DataTable.Cell>
         <DataTable.Cell></DataTable.Cell>
         <DataTable.Cell></DataTable.Cell>
-        <DataTable.Cell></DataTable.Cell>
+        <DataTable.Cell>
+          <TouchableOpacity
+            onPress={() => handleToggle()}
+            style={styles.toggleButton}
+          >
+            <Text style={styles.filterText}>Toggle</Text>
+          </TouchableOpacity>
+        </DataTable.Cell>
       </DataTable.Row>
     </DataTable>
   );
 };
 
 const styles = StyleSheet.create({
-  // FixMe: add styles here ...
-  // use scaleSize(x) to adjust sizes for small/large screens
-
   stockText: {
     color: "white",
     fontSize: scaleSize(20),
@@ -74,10 +128,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomColor: "grey",
   },
-  cellHeader: { 
+  cellHeader: {
     justifyContent: "center",
     borderBottomColor: "white",
-    borderBottomWidth: scaleSize(1)
+    borderBottomWidth: scaleSize(1),
   },
   head: {
     fontSize: scaleSize(20),
@@ -96,5 +150,20 @@ const styles = StyleSheet.create({
   row: {
     borderBottomColor: "white",
     borderBottomWidth: 0.5,
-  }
+  },
+  toggleButton: {
+    elevation: scaleSize(8),
+    backgroundColor: "grey",
+    borderRadius: scaleSize(10),
+    paddingVertical: scaleSize(6),
+    paddingHorizontal: scaleSize(2),
+    width: scaleSize(60),
+  },
+  filterText: {
+    fontSize: scaleSize(14),
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase",
+  },
 });

@@ -4,6 +4,9 @@ import { USERS_API_URL } from "../constants/Utils";
 
 const StocksContext = React.createContext();
 
+/**
+ * This functions supplies state to its children components 
+ */
 export const StocksProvider = ({ children }) => {
   const [state, setState] = useState([]);
 
@@ -14,13 +17,20 @@ export const StocksProvider = ({ children }) => {
   );
 };
 
+/**
+ * This functional component provides context functions for accessing and
+ * and setting the user's symbols from state.
+ */
 export const useStocksContext = () => {
   const [state, setState] = useContext(StocksContext);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentToken, setCurrentToken] = useState("");
-  //const [isTokenExpired, setIsTokenExpired] = useState(false);
 
-  // can put more code here
+  /**
+   * This function sends a post request to the database to update the users
+   * saved symbols. It checks servers response, and removes the users details
+   * from async storage if the users JWT token is expired.
+   */
   async function postSymbolsToUser() {
     let token = await AsyncStorage.getItem("token");
     let user = await AsyncStorage.getItem("email");
@@ -48,6 +58,11 @@ export const useStocksContext = () => {
       });
   }
 
+  /**
+   * This async function retrieves the users symbols from async storage.
+   * 
+   * @returns {Array}
+   */
   async function _retrieveData() {
     try {
       //const keys = AsyncStorage.getItem("symbols");
@@ -60,6 +75,13 @@ export const useStocksContext = () => {
     }
   }
 
+  /**
+   * This async function retrieves the users symbols from the Database and 
+   * checks them against the symbols already in async storage, if async storage
+   * does not contain a symbol it is added.
+   * 
+   * @returns {Array}
+   */
   async function getStocksFromDB() {
     let user = await AsyncStorage.getItem("email");
     if (user === undefined) {
@@ -78,9 +100,21 @@ export const useStocksContext = () => {
         }
       });
       return newArray;
+    } else {
+      console.log("Error getting stocks from DB");
     }
   }
 
+  /**
+   * This function receives a symbol and checks if the symbol is valid, if valid
+   * the symbol is added to state and async storage, and updates the Database.
+   * 
+   * When querying the database, if the token has expired the function returns
+   * false.
+   * 
+   * @param {String} newSymbol 
+   * @returns {Boolean} isTokenExpired
+   */
   async function addToWatchlist(newSymbol) {
     var isInvalidSymbol = state.includes(newSymbol);
     if (isInvalidSymbol === false && newSymbol !== undefined) {
@@ -91,12 +125,23 @@ export const useStocksContext = () => {
     }
   }
 
+  /**
+   * This function sets the current user details of email and token
+   * 
+   * @param {String} email 
+   * @param {String} token 
+   */
   function setCurrentUserDetails(email, token) {
     setCurrentUser(email);
     setCurrentToken(token);
   }
 
-  //debug this later
+  /**
+   * This async function removes a symbol from async storage, state, and the 
+   * database
+   * 
+   * @param {String} symbol 
+   */
   async function removeSymbol(symbol) {
     let retrievedArray = await _retrieveData();
     let tempList = retrievedArray.filter((element) => element !== symbol);
@@ -105,6 +150,11 @@ export const useStocksContext = () => {
     setState(tempList);
   }
 
+  /**
+   * This function sets a list of symbols as the state.
+   * 
+   * @param {Array<String>} data 
+   */
   async function initialiseContextState(data) {
     await setState(data);
   }

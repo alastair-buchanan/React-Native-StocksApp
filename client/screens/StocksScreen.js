@@ -4,11 +4,19 @@ import { useStocksContext } from "../contexts/StocksContext";
 import { StockTab } from "../components/StockTab";
 import { scaleSize } from "../constants/Utils";
 
-export default function StocksScreen({ route }) {
+/**
+ * This functional component displays a scrollable list of items contained in
+ * the stocksContext watch list.
+ */
+export default function StocksScreen() {
   const [state, setState] = useState([]);
   const { watchList } = useStocksContext();
   const [loading, setLoading] = useState(true);
 
+  /**
+   * This useEffect filters any undefined elements from the stocksContext and adds
+   * valid elements to state.
+   */
   useEffect(() => {
     if (watchList !== undefined) {
       watchList.filter((element) => element !== undefined);
@@ -16,6 +24,9 @@ export default function StocksScreen({ route }) {
     }
   }, [watchList]);
 
+  /**
+   * This useEffect sets loading to false when state changes.
+   */
   useEffect(() => {
     setLoading(false);
   }, [state]);

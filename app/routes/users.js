@@ -1,12 +1,13 @@
-const { query } = require("express");
 var express = require("express");
 var router = express.Router();
 const secretKey = "q)o2R4@#$h8*0";
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-//var mysql = require("mysql2");
-
+/**
+ * This function provides authorization by checking if the JWT token has 
+ * expired.
+ */
 const authorize = (req, res, next) => {
   const authorization = req.headers.authorization;
   let token = null;
@@ -38,12 +39,10 @@ const authorize = (req, res, next) => {
   }
 };
 
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.json({ status: "success" });
-});
-
-//Get user symbols
+/**
+ * This request gets and returns the specified user's symbols from
+ * the mysql database
+ */
 router.get("/:email/symbols", function (req, res, next) {
   (async () => {
     try {
@@ -65,6 +64,9 @@ router.get("/:email/symbols", function (req, res, next) {
   })();
 });
 
+/**
+ * This request posts a new user to the mysql database
+ */
 router.post("/register", (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
@@ -92,7 +94,7 @@ router.post("/register", (req, res) => {
         return;
       }
 
-      //insert user into db
+      //insert user into database
       const saltRounds = 10;
       hash = bcrypt.hashSync(password, saltRounds);
 
@@ -113,6 +115,10 @@ router.post("/register", (req, res) => {
     });
 });
 
+/**
+ * This request queries the mysql database for user's details to determine
+ * if the user login is successfull.
+ */
 router.post("/login", function (req, res, next) {
   
   const email = req.body.email;
@@ -156,6 +162,9 @@ router.post("/login", function (req, res, next) {
     });
 });
 
+/**
+ * This request updates the user's symbols stored in the mysql database.
+ */
 router.post("/symbols/update", authorize, function (req, res, next) {
   if (!req.body.email || !req.body.symbols) {
     res.status(400).json({

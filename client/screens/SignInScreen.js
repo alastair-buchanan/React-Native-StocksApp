@@ -4,17 +4,28 @@ import { TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import { TextInput } from "react-native-paper";
-import { API_URL, scaleSize } from "../constants/Utils";
+import { scaleSize, USERS_API_URL } from "../constants/Utils";
 import { useStocksContext } from "../contexts/StocksContext";
 
+/**
+ * This functional component returns a sign in screen with form checking.
+ */
 export default function SignInScreen({ navigation }) {
   const { setCurrentUserDetails } = useStocksContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  /**
+   * This async function send a post request to the database with user details
+   * for sign in. On success the user is navigated to the BottomTabNavigator.
+   * On fail, the user is displayed the server response error message.
+   * 
+   * @param {Object} data 
+   */
   async function signIn(data) {
-    fetch(`${API_URL}/users/login`, {
+    setErrorMessage("");
+    fetch(`${USERS_API_URL}/users/login`, {
       method: "POST",
       headers: {
         accept: "application/json",

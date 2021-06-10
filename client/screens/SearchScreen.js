@@ -13,15 +13,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DataTable } from "react-native-paper";
 import { scaleSize } from "../constants/Utils";
 
-// filterBySearch function filters stocks by symbol
-function filterBySearch(data, param) {
-  return data.filter(
-    (stock) =>
-      stock.Symbol.startsWith(param.toUpperCase()) ||
-      stock.Name.startsWith(param)
-  );
-}
-
+/**
+ * Functional component SearchScreen allows the user to search for a stock
+ * and add it to their watch list. 
+ */
 export default function SearchScreen({ navigation }) {
   const {
     addToWatchlist,
@@ -33,12 +28,37 @@ export default function SearchScreen({ navigation }) {
   const [rowData, setRowData] = useState([]);
   const [searchQuery, setSearchQuery] = useState(null);
 
+  /**
+   * This function sets the search query string when text is typed
+   * into the input search field.
+   * 
+   * @param {string} query 
+   */
   const onChangeSearch = (query) => setSearchQuery(query);
 
+  /**
+   * This function filters stocks by symbol and company name.
+   * 
+   * @param {Array.<Object>} data 
+   * @param {string} param 
+   * @returns {Array.<Object>}
+   */
+  function filterBySearch(data, param) {
+    return data.filter(
+      (stock) =>
+        stock.Symbol.startsWith(param.toUpperCase()) ||
+        stock.Name.startsWith(param)
+    );
+  }
+
+  /**
+   * This async function retrieves data from async storage and the database and initialises
+   * it in stocksContext state.
+   */
   async function initialiseData() {
     var newState = [];
     var newStocksFromDB = await getStocksFromDB();
-    var newStocksFromAsync = await _retrieveData();
+    var newStocksFromAsync = await _retrieveData(); 
     if (newStocksFromAsync !== undefined || newStocksFromAsync !== null) {
       newStocksFromAsync.map((element) => newState.push(element));
     }
@@ -55,7 +75,14 @@ export default function SearchScreen({ navigation }) {
     initialiseContextState(newState);
   }
 
-  //add in notification
+  /**
+   * This function handles the onPress event of a stock. The stock is added
+   * to watch list and the token is pulled from async storage. If the token is
+   * missing the user will be redirected back to the sign in screen, if the token
+   * is valid, the user will be redirected to the stocks screen.
+   * 
+   * @param {string} props 
+   */
   async function onPress(props) {
     await addToWatchlist(props);
     const getTokenFromAsync = await AsyncStorage.getItem("token");
@@ -67,11 +94,17 @@ export default function SearchScreen({ navigation }) {
     }
   }
 
+  /**
+   * This useEffect calls the initialiseData function on start up.
+   */
   useEffect(() => {
-    initialiseData(); // FixMe: fetch symbol names from the server and save in local SearchScreen state
+    initialiseData();
   }, []);
 
-  //
+  /**
+   * This useEffect initialises the data for the displayed flatlist, it is triggered
+   * and filters the data when the filter is changed.
+   */
   useEffect(() => {
     let data = stockList;
     if (searchQuery !== null) {
@@ -80,6 +113,12 @@ export default function SearchScreen({ navigation }) {
     setRowData(data);
   }, [stockList, searchQuery, rowData.props]);
 
+  /**
+   * The stock function is rendered as each element in the flatlist
+   * 
+   * @param {Object} item 
+   * @returns stock component
+   */
   function stock({ item }) {
     return (
       <TouchableOpacity

@@ -1,13 +1,17 @@
-import React, { useEffect } from "react";
-
-import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 import { StockInfoTable } from "../components/StockInfoTable";
 import { StockGraph } from "../components/StockGraph";
 import Swiper from "react-native-swiper/src";
 import { Dimensions } from "react-native";
 
+/**
+ * This functional component provides the swipe popup container that holds
+ * the stockinfo table and stockgraph.
+ * 
+ * @param {Object} stockInfo 
+ */
 export const SwiperComponent = ({ stockInfo }) => {
-
   return (
     <Swiper style={styles.container}>
       <Swiper style={styles.wrapper} showsButtons={true}>

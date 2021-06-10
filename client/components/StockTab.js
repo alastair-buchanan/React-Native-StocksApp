@@ -16,12 +16,22 @@ import { Icon } from "react-native-elements";
 import { useStockDetails } from "../api/Api";
 import { scaleSize } from "../constants/Utils";
 
+/**
+ * This functional component queries the FMP api and returns a stock 
+ * to the user in tabular format.
+ *
+ * @param {String} stock
+ */
 export const StockTab = ({ stock }) => {
   const { removeSymbol } = useStocksContext();
   const { loading, stockDetails, error } = useStockDetails(stock);
-  const refRBSheet = useRef();
   const [outOfStocks, setOutOfStocks] = useState(false);
+  const refRBSheet = useRef();
 
+  /**
+   * This useEffect checks if the api has returned an undefined object and 
+   * conditionally returns a stock tab or an error message.
+   */
   useEffect(() => {
     setOutOfStocks(false);
     if (stockDetails[0] === undefined) {
@@ -38,16 +48,18 @@ export const StockTab = ({ stock }) => {
   }
   if (error) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.stockText}>Error loading stock. Try again later.</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>
+          Error loading stock. Try again later.
+        </Text>
       </View>
     );
   }
 
   if (outOfStocks) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.stockText}>Out of free API calls</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Out of free API calls</Text>
       </View>
     );
   }
@@ -130,6 +142,17 @@ const styles = StyleSheet.create({
   container: {
     width: Dimensions.get("window").width,
     justifyContent: "space-between",
+  },
+  errorContainer: {
+    //flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "white",
+    fontSize: scaleSize(20),
+    textAlign: "center",
+    padding: scaleSize(20),
   },
   loadingContainer: {
     width: Dimensions.get("window").width,

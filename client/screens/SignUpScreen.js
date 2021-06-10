@@ -4,8 +4,12 @@ import { TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import { TextInput } from "react-native-paper";
-import { API_URL, scaleSize } from "../constants/Utils";
+import { scaleSize, USERS_API_URL } from "../constants/Utils";
 
+/**
+ * This functional component displays a sign up screen to the user with form and
+ * error validation, from client and server side.
+ */
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
@@ -14,48 +18,78 @@ export default function SignUpScreen({ navigation }) {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  /**
+   * This function is run when the user submits the form. It contains client side
+   * form validation and returns a boolean value of form validity.
+   * 
+   * @param {string} email 
+   * @param {string} password 
+   * @returns {boolean} isValid
+   */
   function validateSignUp(email, password) {
     let isValid = true;
     var emailFormat =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     var passwordFormat = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    setErrorMessage("");
+    setEmailError("");
+    setPasswordError("");
+    if (email.length === 0 || userName.length === 0 || password.length === 0) {
+      setErrorMessage("No fields can be empty");
+      isValid = false;
+    }
     if (email.match(emailFormat) === null) {
       setEmailError("Email invalid");
       isValid = false;
     }
     if (password.match(passwordFormat) === null) {
       setPasswordError(
-        "Password should contain atleast one number and one special character"
+        "Password should contain atleast one number and one special character and be atleast 6 characters"
       );
       isValid = false;
     }
     return isValid;
   }
 
-  async function signUp(data) {
+
+  /**
+   * This async function checks the user input both client and server side for
+   * validity. If valid user details are stored in the database and async storage
+   * and is redirected to the search screen. If the form in invalid, the user is
+   * displayed error details.
+   * 
+   * @param {String} email 
+   * @param {String} userName 
+   * @param {String} password 
+   */
+  async function signUp({ email, userName, password }) {
     setEmailError("");
     setPasswordError("");
-    const isLoginValid = validateSignUp(data.email, data.password);
+    const isLoginValid = validateSignUp(
+      email,
+      password,
+      userName
+    );
     if (isLoginValid === false) {
       return;
     }
-    fetch(`${API_URL}/users/register`, {
+    fetch(`${USERS_API_URL}/users/register`, {
       method: "POST",
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: data.email,
-        password: data.password,
-        username: data.userName,
+        email: email,
+        password: password,
+        username: userName,
       }),
     })
       .then((res) => res.json())
       .then((res) => {
         if (res.token !== undefined) {
-          AsyncStorage.setItem("email", data.email);
-          AsyncStorage.setItem("token", res.token);
+          AsyncStorage.setItem("email", email);
+          AsyncStorage.setItem("token", token);
           navigation.navigate("BottomTabNavigator");
         } else {
           setErrorMessage(res.Message);

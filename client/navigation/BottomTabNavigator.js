@@ -11,6 +11,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = "Search";
 
+/**
+ * This functional component provides the navigation once the user has signed in
+ * via a bottom tab with buttons
+ */
 export default function BottomTabNavigator({ navigation, route }) {
   useEffect(() => {
     navigation.setOptions({
@@ -19,17 +23,25 @@ export default function BottomTabNavigator({ navigation, route }) {
     });
   }, [navigation, route]);
 
-  function getHeaderTitle() {
-    async function handlePress() {
-      try {
-        AsyncStorage.removeItem("token");
-        AsyncStorage.removeItem("email");
-        navigation.navigate("SignInScreen");
-      } catch (error) {
-        console.log("Error signing out", error);
-      }
+  /**
+   * This function handles the press of the Sign out button, it removes the
+   * user email and token from async storage and redirects the user to the
+   * sign in screen.
+   */
+  async function handlePress() {
+    try {
+      AsyncStorage.removeItem("token");
+      AsyncStorage.removeItem("email");
+      navigation.navigate("SignInScreen");
+    } catch (error) {
+      console.log("Error signing out", error);
     }
+  }
 
+  /**
+   * This function returns the sign out button
+   */
+  function getHeaderTitle() {
     return (
       <View>
         <Button mode="contained" onPress={() => handlePress()}>
