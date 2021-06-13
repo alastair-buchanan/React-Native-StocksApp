@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { LineChart } from "react-native-chart-kit";
@@ -9,10 +9,10 @@ import { useStockCodes } from "../api/Api";
 import { scaleSize } from "../constants/Utils";
 
 /**
- * This function receives an array of objects and number of days to filter by, 
+ * This function receives an array of objects and number of days to filter by,
  * filters the array and then returns the new array.
- * 
- * @param {Array<Object>} data 
+ *
+ * @param {Array<Object>} data
  * @param {Number} param - number of days
  * @returns {Array<Object>} newData - filtered array
  */
@@ -42,17 +42,17 @@ const chartConfig = {
 /**
  * filterElements receives an array and a number and filters the elements based on
  * thats nth index. This is to reduce the amount of labels showing on the graph.
- * 
- * @param {Array} arr 
- * @param {Number} nth 
+ *
+ * @param {Array} arr
+ * @param {Number} nth
  */
 const filterElements = (arr, nth) => arr.filter((e, i) => i % nth === nth - 1);
 
 /**
- * This functional component displays the graph of a specific stock, it can be 
+ * This functional component displays the graph of a specific stock, it can be
  * toggled to show percentage data.
- * 
- * @param {Object} stockInfo 
+ *
+ * @param {Object} stockInfo
  */
 export const StockGraph = ({ stockInfo }) => {
   const { loading, stocks, error } = useStockCodes(stockInfo.symbol);
@@ -89,7 +89,7 @@ export const StockGraph = ({ stockInfo }) => {
   /**
    * This useEffect sets the data for displaying on the graph. This useEffect
    * runs when stocks is initialised and when the filter is toggled or the filter
-   * is changed, the filter filters the graph by date, the toggle toggles from 
+   * is changed, the filter filters the graph by date, the toggle toggles from
    * absolute and percentage data.
    */
   useEffect(() => {
@@ -112,7 +112,11 @@ export const StockGraph = ({ stockInfo }) => {
   }, [stocks, filter, toggle]);
 
   if (loading) {
-    return <Text>Implement loading later</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="grey" />
+      </View>
+    );
   }
   if (error) {
     return <Text style={styles.errorText}>Out of free API calls</Text>;
@@ -202,7 +206,7 @@ const styles = StyleSheet.create({
     width: scaleSize(50),
   },
   filterText: {
-    fontSize: 14,
+    fontSize: scaleSize(14),
     color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
@@ -215,5 +219,10 @@ const styles = StyleSheet.create({
     paddingVertical: scaleSize(10),
     paddingHorizontal: scaleSize(12),
     width: scaleSize(100),
+  },
+  loadingContainer: {
+    width: Dimensions.get("window").width,
+    justifyContent: "center",
+    marginTop: scaleSize(45),
   },
 });

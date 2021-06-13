@@ -144,7 +144,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   errorContainer: {
-    //flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
