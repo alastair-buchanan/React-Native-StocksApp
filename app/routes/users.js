@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 /**
- * This function provides authorization by checking if the JWT token has 
+ * This function provides authorization by checking if the JWT token has
  * expired.
  */
 const authorize = (req, res, next) => {
@@ -14,12 +14,10 @@ const authorize = (req, res, next) => {
   if (authorization && authorization.split(" ").length === 2) {
     token = authorization.split(" ")[1];
   } else {
-    res
-      .status(401)
-      .json({
-        error: true,
-        message: "Unauthorized",
-      });
+    res.status(401).json({
+      error: true,
+      message: "Unauthorized",
+    });
     return;
   }
 
@@ -28,14 +26,14 @@ const authorize = (req, res, next) => {
     const decoded = jwt.verify(token, secretKey);
 
     if (decoded.exp < Date.now()) {
-      res.status(401).json({ error: true, message: "Unauthorized 2" });
+      res.status(401).json({ error: true, message: "Token expired" });
       return;
     }
 
     //allow user to access route
     next();
   } catch (err) {
-    res.status(401).json({ error: true, message: "Unauthorized 3" });
+    res.status(401).json({ error: true, message: "Authorization failed" });
   }
 };
 
@@ -120,7 +118,6 @@ router.post("/register", (req, res) => {
  * if the user login is successfull.
  */
 router.post("/login", function (req, res, next) {
-  
   const email = req.body.email;
   const password = req.body.password;
 
